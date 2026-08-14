@@ -28,15 +28,7 @@
 
 ## Быстрый запуск (Docker Compose)
 
-### 1. Переменные окружения
-Убедитесь, что в корне проекта созданы `.env` файлы (например, `shared.env`, `profile.env`), содержащие параметры доступа:
-```env
-POSTGRES_USER=cohenrol
-POSTGRES_PASSWORD=12345678
-PROFILE_DB_EXTERNAL_PORT=8301
-```
-
-### 2. Генерация Keystore
+### 1. Генерация Keystore
 Для работы сервиса авторизации (подпись JWT) необходимо локально сгенерировать файл `keystore.p12`.
 
 1. Выполните команду в каталоге ресурсов проекта (замените `YOUR_SECRET_PASSWORD` на ваш пароль и AUTHENTICATION_SERVICE_JWT_KEYSTORE_ALIAS на имя алиаса):
@@ -53,7 +45,8 @@ keytool -genkeypair \
   -noprompt
 ```
 
-2. Добавьте пароли в файл конфигурацию в `.env`, например:
+### 2. Переменные окружения
+В корне проекта должен быть `.env` файл, содержащий различные пароли и значения портов, например:
 ```env
 DB_NAME=bank_cards
 DB_USERNAME=bank_admin
