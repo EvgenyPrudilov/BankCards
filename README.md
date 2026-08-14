@@ -31,7 +31,7 @@
 ### 1. Генерация Keystore
 Для работы сервиса авторизации (подпись JWT) необходимо локально сгенерировать файл `keystore.p12`.
 
-1. Выполните команду в каталоге ресурсов проекта (замените `YOUR_SECRET_PASSWORD` на ваш пароль и AUTHENTICATION_SERVICE_JWT_KEYSTORE_ALIAS на имя алиаса):
+1. Выполните команду в каталоге ресурсов проекта (замените `YOUR_SECRET_PASSWORD` на ваш пароль и `AUTHENTICATION_SERVICE_JWT_KEYSTORE_ALIAS` на имя алиаса):
 ```bash
 keytool -genkeypair \
   -alias AUTHENTICATION_SERVICE_JWT_KEYSTORE_ALIAS \
