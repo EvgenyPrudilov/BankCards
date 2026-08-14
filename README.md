@@ -26,80 +26,56 @@
     <li>Баланс</li>
   </ul>
 
-<h2>🧾 Требования</h2>
+## Быстрый запуск (Docker Compose)
 
-<h3>✅ Аутентификация и авторизация</h3>
-  <ul>
-    <li>Spring Security + JWT</li>
-    <li>Роли: <code>ADMIN</code> и <code>USER</code></li>
-  </ul>
+### 1. Переменные окружения
+Убедитесь, что в корне проекта созданы `.env` файлы (например, `shared.env`, `profile.env`), содержащие параметры доступа:
+```env
+POSTGRES_USER=cohenrol
+POSTGRES_PASSWORD=12345678
+PROFILE_DB_EXTERNAL_PORT=8301
+```
 
-<h3>✅ Возможности</h3>
-<strong>Администратор:</strong>
-  <ul>
-    <li>Создаёт, блокирует, активирует, удаляет карты</li>
-    <li>Управляет пользователями</li>
-    <li>Видит все карты</li>
-  </ul>
+### 2. Генерация Keystore
+Для работы сервиса авторизации (подпись JWT) необходимо локально сгенерировать файл `keystore.p12`.
 
-<strong>Пользователь:</strong>
-  <ul>
-    <li>Просматривает свои карты (поиск + пагинация)</li>
-    <li>Запрашивает блокировку карты</li>
-    <li>Делает переводы между своими картами</li>
-    <li>Смотрит баланс</li>
-  </ul>
+1. Выполните команду в каталоге ресурсов проекта (замените `YOUR_SECRET_PASSWORD` на ваш пароль и AUTHENTICATION_SERVICE_JWT_KEYSTORE_ALIAS на имя алиаса):
+```bash
+keytool -genkeypair \
+  -alias AUTHENTICATION_SERVICE_JWT_KEYSTORE_ALIAS \
+  -keyalg EC \
+  -groupname secp256r1 \
+  -validity 365 \
+  -keystore keystore.p12 \
+  -storetype PKCS12 \
+  -storepass AUTHENTICATION_SERVICE_JWT_KEYSTORE_PASSWORD \
+  -dname "CN=auth-server, OU=Development, O=Cohenrol, C=NL" \
+  -noprompt
+```
 
-<h3>✅ API</h3>
-  <ul>
-    <li>CRUD для карт</li>
-    <li>Переводы между своими картами</li>
-    <li>Фильтрация и постраничная выдача</li>
-    <li>Валидация и сообщения об ошибках</li>
-  </ul>
+2. Добавьте пароли в файл конфигурацию в `.env`, например:
+```env
+DB_NAME=bank_cards
+DB_USERNAME=bank_admin
+DB_PASSWORD=bank_secure_password123
 
-<h3>✅ Безопасность</h3>
-  <ul>
-    <li>Шифрование данных</li>
-    <li>Ролевой доступ</li>
-    <li>Маскирование номеров карт</li>
-  </ul>
+DB_INNER_PORT=5432
+DB_EXTERNAL_PORT=5555
 
-<h3>✅ Работа с БД</h3>
-  <ul>
-    <li>PostgreSQL или MySQL</li>
-    <li>Миграции через Liquibase (<code>src/main/resources/db/migration</code>)</li>
-  </ul>
+SERVICE_INNER_PORT=8080
+SERVICE_EXTERNAL_PORT=8080
 
-<h3>✅ Документация</h3>
-  <ul>
-    <li>Swagger UI / OpenAPI — <code>docs/openapi.yaml</code></li>
-    <li><code>README.md</code> с инструкцией запуска</li>
-  </ul>
+SERVICE_JWT_KEYSTORE_PASSWORD=supersecurepassword
+SERVICE_JWT_KEYSTORE_ALIAS=auth-server-ec
+SERVICE_JWT_KEYSTORE_LOCATION=classpath:keystore.p12
 
-<h3>✅ Развёртывание и тестирование</h3>
-  <ul>
-    <li>Docker Compose для dev-среды</li>
-    <li>Liquibase миграции</li>
-    <li>Юнит-тесты ключевой бизнес-логики</li>
-  </ul>
+SERVICE_INIT_ADMIN_USERNAME=super_admin
+SERVICE_INIT_ADMIN_PASSWORD=password
+SERVICE_INIT_ADMIN_EMAIL=root@bank.com
+```
 
-<h2>📊 Оценка</h2>
-  <ul>
-    <li>Соответствие требованиям</li>
-    <li>Чистота архитектуры и кода</li>
-    <li>Безопасность</li>
-    <li>Обработка ошибок</li>
-    <li>Покрытие тестами</li>
-    <li>ООП и уровни абстракции</li>
-  </ul>
-
-<h2>💡 Технологии</h2>
-  <p>
-    Java 17+, Spring Boot, Spring Security, Spring Data JPA, PostgreSQL/MySQL, Liquibase, Docker, JWT, Swagger (OpenAPI)
-  </p>
-
-<h2> 📤 Формат сдачи</h2>
-<p>
-Весь код и изменения принимаются только через git-репозиторий с открытым доступом к проекту. Отправка файлов в любом виде не принимается.
-  </p>
+### 3. Запуск инфраструктуры
+Запустите сборку:
+```bash
+docker compose --env-file .env up --build
+```
