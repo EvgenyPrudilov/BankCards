@@ -15,7 +15,7 @@ import java.util.UUID;
 @Repository
 public interface CardRepository extends JpaRepository<CardEntity, Long> {
     @Query("SELECT c FROM CardEntity c WHERE " +
-        "(:userId IS NULL OR c.userEntity.id = :userId) AND " +
+        "(:userId IS NULL OR c.userEntity.uuid = :userId) AND " +
         "(:status IS NULL OR c.status = :status)")
     Page<CardEntity> findByUserIdAndOptionalStatus(
         @Param("userId") UUID userId,
@@ -32,4 +32,6 @@ public interface CardRepository extends JpaRepository<CardEntity, Long> {
     void deleteByUuid(UUID cardId);
 
     Page<CardEntity> findAllByUuid(UUID uuid, Pageable pageable);
+
+    Page<CardEntity> findAllByUserEntity_Uuid(UUID userUuid, Pageable pageable);
 }

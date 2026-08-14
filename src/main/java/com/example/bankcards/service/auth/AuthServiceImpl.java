@@ -13,6 +13,7 @@ import com.example.bankcards.service.model.RefreshResponse;
 import com.example.bankcards.service.model.RegisterRequest;
 import com.example.bankcards.service.model.enums.UserRole;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -46,12 +48,10 @@ public class AuthServiceImpl implements AuthService {
         UserEntity userEntity = UserEntity.builder()
             .username(request.getUsername())
             .password(passwordEncoder.encode(request.getPassword()))
-            .role(UserRole.ROLE_USER)
+            .role(UserRole.USER)
             .enabled(true)
             .email(request.getEmail())
             .build();
-
-        // sendVerificationEmail(savedUser);
         userRepository.save(userEntity);
     }
 
@@ -79,11 +79,23 @@ public class AuthServiceImpl implements AuthService {
         return loginResponse;
     }
 
+
     @Transactional
     public void logout(String userName) {
-        userRepository.findByUsername(userName).ifPresent(user -> {
-            refreshTokenRepository.deleteByUserEntity_Id(user.getId());
-        });
+        userRepository.findByUsername(userName).ifPresentOrElse(
+            user -> {
+                // 2. Логируем, что пользователь найден и его ID
+                log.info("Пользователь найден. ID: {}. Удаляем токен...", user.getId());
+
+                refreshTokenRepository.deleteByUserEntity_Id(user.getId());
+
+                log.info("Токен для пользователя ID {} успешно удален", user.getId());
+            },
+            () -> {
+                // 3. Логируем, если пользователь НЕ найден
+                log.info("Пользователь с именем {} не найден в базе данных", userName);
+            }
+        );
     }
 
     @Transactional

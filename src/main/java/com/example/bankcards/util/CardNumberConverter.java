@@ -1,9 +1,7 @@
 package com.example.bankcards.util;
 
-import io.jsonwebtoken.Jwts;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -11,13 +9,8 @@ import java.util.Base64;
 
 @Converter
 public class CardNumberConverter implements AttributeConverter<String, String> {
-
-//    Jwts.SIG.ES256
     private static final String ALGORITHM = "AES";
     private static final String SECRET_KEY = "my-super-secret-key-32-bytes!!!";
-
-//    @Value("${app.jwt.common.key-id}")
-//    private String jwtKeyId;
 
     @Override
     public String convertToDatabaseColumn(String attribute) {

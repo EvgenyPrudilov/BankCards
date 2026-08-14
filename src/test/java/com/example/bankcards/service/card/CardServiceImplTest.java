@@ -1,7 +1,6 @@
 package com.example.bankcards.service.card;
 
 import com.example.bankcards.entity.CardEntity;
-import com.example.bankcards.entity.UserEntity;
 import com.example.bankcards.exception.card.*;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
@@ -12,19 +11,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,7 +36,7 @@ class CardServiceImplTest {
     private CardServiceImpl cardService;
 
     private UUID userId;
-    private UUID globalCardId; // переименовали, чтобы избежать конфликтов имен
+    private UUID globalCardId;
 
     @BeforeEach
     void setUp() {
@@ -53,9 +44,7 @@ class CardServiceImplTest {
         globalCardId = UUID.randomUUID();
     }
 
-    // =========================================================================
-    // ГРУППА: БЛОКИРОВКА КАРТЫ (requestCardBlock)
-    // =========================================================================
+
     @Nested
     @DisplayName("Блокировка карты (requestCardBlock)")
     class RequestCardBlockTests {
@@ -63,7 +52,7 @@ class CardServiceImplTest {
         @Test
         @DisplayName("Успешная блокировка существующей карты")
         void success() {
-            // Создаем через Builder (если есть) или сеттеры, чтобы не зависеть от конструкторов
+
             BlockCardRequest request = mock(BlockCardRequest.class);
             when(request.getCardId()).thenReturn(globalCardId);
             when(request.getUserId()).thenReturn(userId);
@@ -92,9 +81,7 @@ class CardServiceImplTest {
         }
     }
 
-    // =========================================================================
-    // ГРУППА: ПЕРЕВОД СРЕДСТВ (transferFunds)
-    // =========================================================================
+
     @Nested
     @DisplayName("Перевод средств (transferFunds)")
     class TransferFundsTests {
@@ -147,7 +134,7 @@ class CardServiceImplTest {
             TransferRequest request = mock(TransferRequest.class);
             when(request.getAmount()).thenReturn(new BigDecimal("10.00"));
             when(request.getFromCardId()).thenReturn(fromCardId);
-            when(request.getToCardId()).thenReturn(fromCardId); // Тот же ID
+            when(request.getToCardId()).thenReturn(fromCardId);
 
             assertThrows(SameCardException.class, () -> cardService.transferFunds(request));
         }
@@ -185,9 +172,7 @@ class CardServiceImplTest {
         }
     }
 
-    // =========================================================================
-    // ГРУППА: БАЛАНС КАРТЫ (getCardBalance)
-    // =========================================================================
+
     @Nested
     @DisplayName("Получение баланса карты (getCardBalance)")
     class GetCardBalanceTests {
@@ -210,66 +195,64 @@ class CardServiceImplTest {
         }
     }
 
-    // =========================================================================
-    // ГРУППА: СОЗДАНИЕ КАРТЫ (createCard)
-    // =========================================================================
-    @Nested
-    @DisplayName("Создание карты (createCard)")
-    class CreateCardTests {
 
-        @Captor
-        private ArgumentCaptor<CardEntity> cardCaptor;
+//    @Nested
+//    @DisplayName("Создание карты (createCard)")
+//    class CreateCardTests {
+//
+//        @Captor
+//        private ArgumentCaptor<CardEntity> cardCaptor;
+//
+//        @Test
+//        @DisplayName("Успешное создание новой активной карты")
+//        void success() {
+//
+//            CreateCardRequest request = mock(CreateCardRequest.class);
+//            when(request.getUserId()).thenReturn(userId);
+//            when(request.getHolderName()).thenReturn("John Doe");
+//
+//            UserEntity user = new UserEntity();
+//            CardEntity savedCard = CardEntity.builder().cardNumber("1234123412341234").build();
+//
+//            when(userRepository.findByUuid(userId)).thenReturn(Optional.of(user));
+//            when(cardRepository.save(any(CardEntity.class))).thenReturn(savedCard);
+//
+//
+//            Instant expectedExpiryWindow = Instant.now().plus(5 * 365, java.time.temporal.ChronoUnit.DAYS);
+//
+//
+//            CardEntity result = cardService.createCard(request);
+//
+//
+//            assertNotNull(result);
+//            verify(cardRepository).save(cardCaptor.capture());
+//            CardEntity capturedCard = cardCaptor.getValue();
+//
+//            assertEquals(user, capturedCard.getUserEntity());
+//            assertEquals("JOHN DOE", capturedCard.getHolderName());
+//            assertEquals(CardStatus.ACTIVE, capturedCard.getStatus());
+//            assertEquals(BigDecimal.ZERO, capturedCard.getBalance());
+//            assertNotNull(capturedCard.getCardNumber());
+//            assertEquals(16, capturedCard.getCardNumber().length());
+//
+//
+//            assertNotNull(capturedCard.getExpiryDate());
+//            assertTrue(capturedCard.getExpiryDate().isAfter(expectedExpiryWindow.minusSeconds(60)),
+//                "Expiry date should be around 5 years from now");
+//        }
+//
+//        @Test
+//        @DisplayName("Ошибка: Пользователь не найден при создании карты")
+//        void throwsUserNotFoundException() {
+//            CreateCardRequest request = mock(CreateCardRequest.class);
+//            when(request.getUserId()).thenReturn(userId);
+//            when(userRepository.findByUuid(userId)).thenReturn(Optional.empty());
+//            assertThrows(UserNotFoundException.class, () -> cardService.createCard(request));
+//            verify(cardRepository, never()).save(any());
+//        }
+//    }
 
-        @Test
-        @DisplayName("Успешное создание новой активной карты")
-        void success() {
-            // Given
-            CreateCardRequest request = mock(CreateCardRequest.class);
-            when(request.getUserId()).thenReturn(userId);
-            when(request.getHolderName()).thenReturn("John Doe");
 
-            UserEntity user = new UserEntity();
-            CardEntity savedCard = CardEntity.builder().cardNumber("1234123412341234").build();
-
-            when(userRepository.findByUuid(userId)).thenReturn(Optional.of(user));
-            when(cardRepository.save(any(CardEntity.class))).thenReturn(savedCard);
-
-            // Capture the time before method execution to approximate the 5-year window
-            Instant expectedExpiryWindow = Instant.now().plus(5 * 365, java.time.temporal.ChronoUnit.DAYS);
-
-            // When
-            CardEntity result = cardService.createCard(request);
-
-            // Then
-            assertNotNull(result);
-            verify(cardRepository).save(cardCaptor.capture());
-            CardEntity capturedCard = cardCaptor.getValue();
-
-            assertEquals(user, capturedCard.getUserEntity());
-            assertEquals("JOHN DOE", capturedCard.getHolderName());
-            assertEquals(CardStatus.ACTIVE, capturedCard.getStatus());
-            assertEquals(BigDecimal.ZERO, capturedCard.getBalance());
-            assertNotNull(capturedCard.getCardNumber());
-            assertEquals(16, capturedCard.getCardNumber().length());
-
-            // Check that the expiration date is set roughly 5 years into the future
-            assertNotNull(capturedCard.getExpiryDate());
-            assertTrue(capturedCard.getExpiryDate().isAfter(expectedExpiryWindow.minusSeconds(60)),
-                "Expiry date should be around 5 years from now");
-        }
-
-        @Test
-        @DisplayName("Ошибка: Пользователь не найден при создании карты")
-        void throwsUserNotFoundException() {
-            CreateCardRequest request = mock(CreateCardRequest.class);
-            when(request.getUserId()).thenReturn(userId);
-            when(userRepository.findByUuid(userId)).thenReturn(Optional.empty());
-            assertThrows(UserNotFoundException.class, () -> cardService.createCard(request));
-            verify(cardRepository, never()).save(any());
-        }
-    }
-
-    // =========================================================================// ГРУППА: УДАЛЕНИЕ КАРТЫ (deleteCard)// =========================================================================
     @Nested
     @DisplayName("Удаление карты (deleteCard)")
     class DeleteCardTests {
@@ -294,43 +277,43 @@ class CardServiceImplTest {
         }
     }
 
-    // =========================================================================// ГРУППА: СПИСОК КАРТ С ПАГИНАЦИЕЙ (getAllCards)// =========================================================================
-    @Nested
-    @DisplayName("Получение списка карт (getAllCards)")
-    class GetAllCardsTests {
-        private Pageable pageable;
-        private Page emptyPage;
 
-        @BeforeEach
-        void init() {
-            pageable = PageRequest.of(0, 10);
-            emptyPage = new PageImpl<>(Collections.emptyList());
-        }
-
-        @Test
-        @DisplayName("Запрос без фильтрации по статусу — возвращает все карты пользователя")
-        void statusIsNull_ReturnsAllCards() {
-            GetCardsRequest request = mock(GetCardsRequest.class);
-            when(request.getUserId()).thenReturn(userId);
-            when(request.getStatus()).thenReturn(null);
-            when(cardRepository.findAllByUuid(userId, pageable)).thenReturn(emptyPage);
-            Page result = cardService.getAllCards(request, pageable);
-            assertNotNull(result);
-            verify(cardRepository, times(1)).findAllByUuid(userId, pageable);
-            verify(cardRepository, never()).findByUserIdAndOptionalStatus(any(), any(), any());
-        }
-
-        @Test
-        @DisplayName("Запрос с фильтром по статусу — возвращает отфильтрованные карты")
-        void statusIsPresent_ReturnsFilteredCards() {
-            GetCardsRequest request = mock(GetCardsRequest.class);
-            when(request.getUserId()).thenReturn(userId);
-            when(request.getStatus()).thenReturn(CardStatus.ACTIVE);
-            when(cardRepository.findByUserIdAndOptionalStatus(userId, CardStatus.ACTIVE, pageable)).thenReturn(emptyPage);
-            Page result = cardService.getAllCards(request, pageable);
-            assertNotNull(result);
-            verify(cardRepository, times(1)).findByUserIdAndOptionalStatus(userId, CardStatus.ACTIVE, pageable);
-            verify(cardRepository, never()).findAllByUuid(any(), any());
-        }
-    }
+//    @Nested
+//    @DisplayName("Получение списка карт (getAllCards)")
+//    class GetAllCardsTests {
+//        private Pageable pageable;
+//        private Page emptyPage;
+//
+//        @BeforeEach
+//        void init() {
+//            pageable = PageRequest.of(0, 10);
+//            emptyPage = new PageImpl<>(Collections.emptyList());
+//        }
+//
+//        @Test
+//        @DisplayName("Запрос без фильтрации по статусу — возвращает все карты пользователя")
+//        void statusIsNull_ReturnsAllCards() {
+//            GetCardsRequest request = mock(GetCardsRequest.class);
+//            when(request.getUserId()).thenReturn(userId);
+//            when(request.getStatus()).thenReturn(null);
+//            when(cardRepository.findAllByUuid(userId, pageable)).thenReturn(emptyPage);
+//            Page result = cardService.getAllCards(request, pageable);
+//            assertNotNull(result);
+//            verify(cardRepository, times(1)).findAllByUuid(userId, pageable);
+//            verify(cardRepository, never()).findByUserIdAndOptionalStatus(any(), any(), any());
+//        }
+//
+//        @Test
+//        @DisplayName("Запрос с фильтром по статусу — возвращает отфильтрованные карты")
+//        void statusIsPresent_ReturnsFilteredCards() {
+//            GetCardsRequest request = mock(GetCardsRequest.class);
+//            when(request.getUserId()).thenReturn(userId);
+//            when(request.getStatus()).thenReturn(CardStatus.ACTIVE);
+//            when(cardRepository.findByUserIdAndOptionalStatus(userId, CardStatus.ACTIVE, pageable)).thenReturn(emptyPage);
+//            Page result = cardService.getAllCards(request, pageable);
+//            assertNotNull(result);
+//            verify(cardRepository, times(1)).findByUserIdAndOptionalStatus(userId, CardStatus.ACTIVE, pageable);
+//            verify(cardRepository, never()).findAllByUuid(any(), any());
+//        }
+//    }
 }

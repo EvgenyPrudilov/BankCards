@@ -13,14 +13,14 @@ import java.util.UUID;
 )
 public class UpdateCardStatusRequestDto {
 
-    @NotNull(message = "User ID is required.")
+    @NotNull(message = "Card ID is required.")
     @Schema(
-        description = "The unique identifier of the user who owns the card.",
+        description = "The unique identifier of the card.",
         example = "123e4567-e89b-12d3-a456-426614174000",
         format = "uuid",
         requiredMode = Schema.RequiredMode.REQUIRED
     )
-    private UUID userId;
+    private UUID cardId;
 
     @NotNull(message = "Card status is required.")
     @Schema(

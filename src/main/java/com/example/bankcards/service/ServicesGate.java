@@ -75,16 +75,19 @@ public class ServicesGate {
         cardService.transferFunds(cardMapper.toDomain(requestDto));
     }
 
-    public GetCardsResponseDto getAllCards(GetCardsRequestDto requestDto, Pageable pageable) {
-//        return getAllCards(null, requestDto, pageable);
+    public GetCardsResponseDto getAllCards(GetCardsAdminRequestDto requestDto, Pageable pageable) {
+
         return cardMapper.toDto(
             cardService.getAllCards(cardMapper.toDomain(requestDto), pageable)
         );
     }
 
-//    public GetCardsResponseDto getAllCards(UUID uuid, GetCardsRequestDto requestDto, Pageable pageable) {
-//        return cardMapper.toDto(
-//            cardService.getAllCards(uuid, cardMapper.toDomain(requestDto), pageable)
-//        );
-//    }
+    public GetCardsResponseDto getAllCards(GetCardsRequestDto requestDto, Pageable pageable) {
+
+        return cardMapper.toDto(
+            cardService.getAllCards(cardMapper.toDomain(requestDto), pageable)
+        );
+    }
+
+
 }

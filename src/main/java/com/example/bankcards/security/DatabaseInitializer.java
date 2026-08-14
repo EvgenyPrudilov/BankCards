@@ -17,16 +17,16 @@ public class DatabaseInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${INIT_ADMIN_USERNAME}")
+    @Value("${app.admin.main.name}")
     private String adminUsername;
-    @Value("${INIT_ADMIN_PASSWORD}")
+    @Value("${app.admin.main.password}")
     private String adminPassword;
-    @Value("${INIT_ADMIN_EMAIL}")
+    @Value("${app.admin.main.email}")
     private String adminEmail;
 
     @Override
     public void run(String... args) {
-        boolean adminExists = userRepository.existsByRole(UserRole.ROLE_ADMIN);
+        boolean adminExists = userRepository.existsByRole(UserRole.ADMIN);
 
         if (!adminExists) {
             UserEntity rootAdmin = UserEntity.builder()
@@ -35,7 +35,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                 .password(passwordEncoder.encode(adminPassword))
                 .email(adminEmail)
                 .enabled(true)
-                .role(UserRole.ROLE_ADMIN)
+                .role(UserRole.ADMIN)
                 .build();
             userRepository.save(rootAdmin);
         }

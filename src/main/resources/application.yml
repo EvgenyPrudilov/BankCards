@@ -51,10 +51,12 @@ app:
       access-key-audience: cards-service
   admin:
     invite:
-#      base-url: ${ADMIN_INVITE_BASE_URL}
+      #      base-url: ${ADMIN_INVITE_BASE_URL}
       expiration-ms: 900000
-
-
+    main:
+      name: ${INIT_ADMIN_USERNAME}
+      password: ${INIT_ADMIN_PASSWORD}
+      email: ${INIT_ADMIN_EMAIL}
 
 springdoc:
   packages-to-scan:
@@ -84,5 +86,4 @@ logging:
 
     # 4. Логирование процесса сериализации/десериализации JSON (ошибки парсинга тела запроса)
     org.springframework.http.converter.json: DEBUG
-
-
+    org.hibernate.orm.jdbc.bind: trace

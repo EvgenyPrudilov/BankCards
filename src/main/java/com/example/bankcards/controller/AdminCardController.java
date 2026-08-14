@@ -30,7 +30,7 @@ public class AdminCardController implements AdminCardControllerDocs {
     @Override
     @PostMapping("/search")
     public ResponseEntity<GetCardsResponseDto> getAllCards(
-        @Valid @RequestBody GetCardsRequestDto requestDto,
+        @Valid @RequestBody GetCardsAdminRequestDto requestDto,
         @PageableDefault(size = 10) Pageable pageable
     ) {
         GetCardsResponseDto cards = servicesGate.getAllCards(requestDto, pageable);

@@ -4,21 +4,13 @@ import com.example.bankcards.service.model.enums.CardStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 @Schema(
     description = "Request payload used to fetch and filter a list of bank cards belonging to a specific user."
 )
-public class GetCardsRequestDto {
+public class GetCardsAdminRequestDto {
 
-    @Schema(
-        description = "The unique identifier of the user whose cards are being requested.",
-        example = "123e4567-e89b-12d3-a456-426614174000",
-        format = "uuid",
-        nullable = true
-    )
-    private UUID userId;
+    private String userName;
 
     @Schema(
         description = "Optional card status filter. If omitted or null, all cards for the user will be returned.",
@@ -27,8 +19,8 @@ public class GetCardsRequestDto {
     )
     private CardStatus status;
 
-    public GetCardsRequestDto setUserId(UUID userId) {
-        this.userId = userId;
-        return this;
-    }
+//    public GetCardsAdminRequestDto setUserId(UUID userId) {
+//        this.userId = userId;
+//        return this;
+//    }
 }

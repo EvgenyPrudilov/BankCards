@@ -1,7 +1,6 @@
 package com.example.bankcards.entity;
 
 import com.example.bankcards.service.model.enums.CardStatus;
-import com.example.bankcards.util.CardNumberConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +30,7 @@ public class CardEntity {
     @Builder.Default
     private UUID uuid = UUID.randomUUID();
 
-    @Convert(converter = CardNumberConverter.class)
+    //    @Convert(converter = CardNumberConverter.class)
     @Column(name = "encrypted_number", nullable = false, unique = true)
     private String cardNumber;
 

@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.Period;
 import java.util.Random;
 import java.util.UUID;
 
@@ -80,11 +78,12 @@ public class CardServiceImpl implements CardService {
         return new GetCardBalanceResponse(cardEntity.getBalance());
     }
 
-
     @Override
     @Transactional
     public CardEntity createCard(CreateCardRequest request) {
-        UserEntity userEntity = userRepository.findByUuid(request.getUserId())
+//        UserEntity userEntity = userRepository.findByUuid(request.getUserId())
+//            .orElseThrow(UserNotFoundException::new);
+        UserEntity userEntity = userRepository.findByUsername(request.getUserName())
             .orElseThrow(UserNotFoundException::new);
 
         CardEntity cardEntity = CardEntity.builder()
@@ -93,7 +92,7 @@ public class CardServiceImpl implements CardService {
             .holderName(request.getHolderName().toUpperCase())
             .expiryDate(java.time.ZonedDateTime.now().plusYears(5).toInstant())
             .status(CardStatus.ACTIVE)
-            .balance(BigDecimal.ZERO)
+            .balance(request.getInitBalance() == null ? BigDecimal.ZERO : request.getInitBalance())
             .build();
 
         return cardRepository.save(cardEntity);
@@ -120,9 +119,19 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    public Page<CardEntity> getAllCards(GetCardsAdminRequest request, Pageable pageable) {
+        UserEntity userEntity = userRepository.findByUsername(request.getUserName())
+            .orElseThrow(UserNotFoundException::new);
+        if (request.getStatus() == null) {
+            return cardRepository.findAllByUserEntity_Uuid(userEntity.getUuid(), pageable);
+        }
+        return cardRepository.findByUserIdAndOptionalStatus(userEntity.getUuid(), request.getStatus(), pageable);
+    }
+
+    @Override
     public Page<CardEntity> getAllCards(GetCardsRequest request, Pageable pageable) {
         if (request.getStatus() == null) {
-            return cardRepository.findAllByUuid(request.getUserId(), pageable);
+            return cardRepository.findAllByUserEntity_Uuid(request.getUserId(), pageable);
         }
         return cardRepository.findByUserIdAndOptionalStatus(request.getUserId(), request.getStatus(), pageable);
     }

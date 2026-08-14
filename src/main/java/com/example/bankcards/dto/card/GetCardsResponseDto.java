@@ -1,6 +1,5 @@
 package com.example.bankcards.dto.card;
 
-import com.example.bankcards.service.model.CardResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -15,5 +14,5 @@ public class GetCardsResponseDto {
     @Schema(
         description = "The list of bank cards matching the requested criteria or belonging to the specified user."
     )
-    private List<GetCardsRequestDto> cards;
+    private List<GetCardResponseDto> cards;
 }

@@ -1,6 +1,5 @@
 package com.example.bankcards.dto.auth;
 
-import com.example.bankcards.service.model.enums.UserRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

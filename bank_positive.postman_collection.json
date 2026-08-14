@@ -1,0 +1,1944 @@
+{
+  "info": {
+    "_postman_id": "ff7caee5-8a55-45ea-ac84-16fe1cc4893e",
+    "name": "bank_positive",
+    "description": "ыуаау",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "37632265",
+    "_collection_link": "https://go.postman.co/collection/37632265-ff7caee5-8a55-45ea-ac84-16fe1cc4893e?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Login (main admin)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус ответа 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Ответ содержит accessToken и username\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    \r",
+              "    pm.expect(jsonData).to.have.property('accessToken');\r",
+              "    pm.expect(jsonData.accessToken).to.be.a('string');\r",
+              "    const jwtRegex = /^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)$/;\r",
+              "    pm.expect(jsonData.accessToken).to.match(jwtRegex);\r",
+              "    \r",
+              "    pm.expect(jsonData).to.have.property('username', pm.collectionVariables.get(\"main_admin_username\"));\r",
+              "});\r",
+              "\r",
+              "pm.test(\"В ответе присутствует установленная кука авторизации\", function () {\r",
+              "    const setCookieHeader = pm.response.headers.get('Set-Cookie');\r",
+              "    \r",
+              "    // Проверяем, что заголовок существует и содержит имя нашей куки\r",
+              "    pm.expect(setCookieHeader).to.not.be.undefined;\r",
+              "    pm.expect(setCookieHeader).to.include('refreshToken=');\r",
+              "    pm.expect(setCookieHeader).to.include('Path=/api/v1/public/auth/refresh');\r",
+              "\r",
+              "    const match = setCookieHeader.match(/refreshToken=([^;]+)/);\r",
+              "    \r",
+              "    pm.expect(match).to.not.be.null; // Проверяем, что регулярка сработала\r",
+              "    \r",
+              "    const tokenValue = match[1]; // Берем чистый токен из первой группы захвата\r",
+              "    \r",
+              "    // Сохраняем в переменную коллекции Postman\r",
+              "    pm.collectionVariables.set(\"main_admin_refresh_token\", tokenValue);\r",
+              "\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.collectionVariables.set(\"main_admin_access_token\", pm.response.json().accessToken);\r",
+              "// pm.globals.set(\"main_admin_access_token\", pm.response.json().accessToken);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set(\"main_admin_username\", \"super_admin\");\r",
+              "pm.collectionVariables.set(\"main_admin_password\", \"password\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"{{main_admin_username}}\",\r\n    \"password\": \"{{main_admin_password}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{publicPath}}/login",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{publicPath}}",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Refresh",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус ответа 200 OK при обновлении токена\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Ответ содержит accessToken и username\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    \r",
+              "    pm.expect(jsonData).to.have.property('accessToken');\r",
+              "    pm.expect(jsonData.accessToken).to.be.a('string');\r",
+              "    const jwtRegex = /^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)$/;\r",
+              "    pm.expect(jsonData.accessToken).to.match(jwtRegex);\r",
+              "    \r",
+              "    pm.expect(jsonData).to.have.property('username', pm.collectionVariables.get('main_admin_username'));\r",
+              "});\r",
+              "\r",
+              "pm.test(\"В ответе присутствует установленная кука авторизации\", function () {\r",
+              "    const setCookieHeader = pm.response.headers.get('Set-Cookie');\r",
+              "    \r",
+              "    // Проверяем, что заголовок существует и содержит имя нашей куки\r",
+              "    pm.expect(setCookieHeader).to.not.be.undefined;\r",
+              "    pm.expect(setCookieHeader).to.include('refreshToken=');\r",
+              "    pm.expect(setCookieHeader).to.include('Path=/api/v1/public/auth/refresh');\r",
+              "\r",
+              "    const match = setCookieHeader.match(/refreshToken=([^;]+)/);\r",
+              "    \r",
+              "    pm.expect(match).to.not.be.null; // Проверяем, что регулярка сработала\r",
+              "    \r",
+              "    const tokenValue = match[1]; // Берем чистый токен из первой группы захвата\r",
+              "    \r",
+              "    // Сохраняем в переменную коллекции Postman\r",
+              "    pm.collectionVariables.set(\"main_admin_refresh_token\", tokenValue);\r",
+              "\r",
+              "});\r",
+              "\r",
+              "pm.collectionVariables.set(\"main_admin_access_token\", pm.response.json().accessToken);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{main_admin_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{publicPath}}/refresh",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{publicPath}}",
+            "refresh"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Logout",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус ответа 200 OK при логауте\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Тело ответа полностью пустое\", function () {\r",
+              "    pm.expect(pm.response.text()).to.equal(\"\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Сервер прислал команду на удаление куки refreshToken\", function () {\r",
+              "    const setCookieHeader = pm.response.headers.get('Set-Cookie');\r",
+              "    \r",
+              "    pm.expect(setCookieHeader).to.not.be.undefined;\r",
+              "    \r",
+              "    pm.expect(setCookieHeader).to.match(/refreshToken=(;|\"\";)/);\r",
+              "    \r",
+              "    pm.expect(setCookieHeader).to.include('Max-Age=0');\r",
+              "    pm.expect(setCookieHeader).to.include('Path=/api/v1/public/auth/refresh');\r",
+              "});\r",
+              "\r",
+              "// pm.collectionVariables.unset(\"main_admin_access_token\");\r",
+              "// pm.collectionVariables.unset(\"main_admin_refresh_token\");\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{main_admin_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{privatePath}}/logout",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{privatePath}}",
+            "logout"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login again (main admin)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус ответа 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Ответ содержит accessToken и username\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    \r",
+              "    pm.expect(jsonData).to.have.property('accessToken');\r",
+              "    pm.expect(jsonData.accessToken).to.be.a('string');\r",
+              "    const jwtRegex = /^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)$/;\r",
+              "    pm.expect(jsonData.accessToken).to.match(jwtRegex);\r",
+              "    \r",
+              "    pm.expect(jsonData).to.have.property('username', pm.collectionVariables.get('main_admin_username'));\r",
+              "});\r",
+              "\r",
+              "pm.test(\"В ответе присутствует установленная кука авторизации\", function () {\r",
+              "    const setCookieHeader = pm.response.headers.get('Set-Cookie');\r",
+              "    \r",
+              "    // Проверяем, что заголовок существует и содержит имя нашей куки\r",
+              "    pm.expect(setCookieHeader).to.not.be.undefined;\r",
+              "    pm.expect(setCookieHeader).to.include('refreshToken=');\r",
+              "    pm.expect(setCookieHeader).to.include('Path=/api/v1/public/auth/refresh');\r",
+              "\r",
+              "    const match = setCookieHeader.match(/refreshToken=([^;]+)/);\r",
+              "    \r",
+              "    pm.expect(match).to.not.be.null; // Проверяем, что регулярка сработала\r",
+              "    \r",
+              "    const tokenValue = match[1]; // Берем чистый токен из первой группы захвата\r",
+              "    \r",
+              "    // Сохраняем в переменную коллекции Postman\r",
+              "    pm.collectionVariables.set(\"main_admin_refresh_token\", tokenValue);\r",
+              "\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.collectionVariables.set(\"main_admin_access_token\", pm.response.json().accessToken);\r",
+              "// pm.globals.set(\"main_admin_access_token\", pm.response.json().accessToken);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"{{main_admin_username}}\",\r\n    \"password\": \"{{main_admin_password}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{publicPath}}/login",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{publicPath}}",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get an invitation (new admin)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем HTTP-статус\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем структуру и типы данных ответа\r",
+              "pm.test(\"Response body matches AdminInvitationResponseDto structure\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    \r",
+              "    // Проверяем, что email совпадает с отправленным\r",
+              "    pm.expect(jsonData.email).to.eql(\"new-admin@bankcards.com\");\r",
+              "    \r",
+              "    // Проверяем наличие и тип ссылки приглашения\r",
+              "    pm.expect(jsonData.token).to.be.a('string');\r",
+              "    \r",
+              "    // Проверяем наличие даты истечения\r",
+              "    pm.expect(jsonData.expiryDate).to.be.a('string');\r",
+              "    // Проверка на ISO-формат даты (Instant преобразуется в строку вида 2026-08-12T01:02:03Z)\r",
+              "    pm.expect(jsonData.expiryDate).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);\r",
+              "});\r",
+              "\r",
+              "pm.collectionVariables.set(\"invitationToken\", pm.response.json().token);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{main_admin_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"new-admin@bankcards.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{privatePath}}/admin/invitations",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{privatePath}}",
+            "admin",
+            "invitations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Take an invitation (new admin)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем правильный статус ответа для .noContent().build()\r",
+              "pm.test(\"Status code is 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем, что тело ответа абсолютно пустое\r",
+              "pm.test(\"Response body is empty\", function () {\r",
+              "    pm.expect(pm.response.text()).to.be.empty;\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set(\"new_admin_username\", \"admin_user_1\");\r",
+              "pm.collectionVariables.set(\"new_admin_password\", \"superSecurePassword123\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"{{new_admin_username}}\",\r\n  \"password\": \"{{new_admin_password}}\",\r\n  \"token\": \"{{invitationToken}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{publicPath}}/admin/register",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{publicPath}}",
+            "admin",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login (new admin)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус ответа 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Ответ содержит accessToken и username\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    \r",
+              "    pm.expect(jsonData).to.have.property('accessToken');\r",
+              "    pm.expect(jsonData.accessToken).to.be.a('string');\r",
+              "    const jwtRegex = /^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)$/;\r",
+              "    pm.expect(jsonData.accessToken).to.match(jwtRegex);\r",
+              "    \r",
+              "    pm.expect(jsonData).to.have.property('username', pm.collectionVariables.get('new_admin_username'));\r",
+              "});\r",
+              "\r",
+              "pm.test(\"В ответе присутствует установленная кука авторизации\", function () {\r",
+              "    const setCookieHeader = pm.response.headers.get('Set-Cookie');\r",
+              "    \r",
+              "    // Проверяем, что заголовок существует и содержит имя нашей куки\r",
+              "    pm.expect(setCookieHeader).to.not.be.undefined;\r",
+              "    pm.expect(setCookieHeader).to.include('refreshToken=');\r",
+              "    pm.expect(setCookieHeader).to.include('Path=/api/v1/public/auth/refresh');\r",
+              "\r",
+              "    const match = setCookieHeader.match(/refreshToken=([^;]+)/);\r",
+              "    \r",
+              "    pm.expect(match).to.not.be.null; // Проверяем, что регулярка сработала\r",
+              "    \r",
+              "    const tokenValue = match[1]; // Берем чистый токен из первой группы захвата\r",
+              "    \r",
+              "    // Сохраняем в переменную коллекции Postman\r",
+              "    pm.collectionVariables.set(\"new_admin_saved_refresh_token\", tokenValue);\r",
+              "\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.collectionVariables.set(\"new_admin_access_token\", pm.response.json().accessToken);\r",
+              "// pm.globals.set(\"access_token\", pm.response.json().accessToken);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"{{new_admin_username}}\",\r\n    \"password\": \"{{new_admin_password}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{publicPath}}/login",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{publicPath}}",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Registration",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const uniqueId = Date.now();\r",
+              "const username = `user_${uniqueId}`;\r",
+              "const email = `user_${uniqueId}@example.com`;\r",
+              "const password = \"securePassword123\";\r",
+              "\r",
+              "pm.collectionVariables.set(\"new_user_username\", username);\r",
+              "pm.collectionVariables.set(\"new_user_email\", email);\r",
+              "pm.collectionVariables.set(\"new_user_password\", password);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус ответа должен быть 201 Created\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Тело ответа полностью пустое\", function () {\r",
+              "    pm.expect(pm.response.text()).to.equal(\"\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"{{new_user_username}}\",\r\n  \"email\": \"{{new_user_email}}\",\r\n  \"password\": \"{{new_user_password}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{publicPath}}/register",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{publicPath}}",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login (new user)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Статус ответа 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Ответ содержит accessToken и username\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    \r",
+              "    pm.expect(jsonData).to.have.property('accessToken');\r",
+              "    pm.expect(jsonData.accessToken).to.be.a('string');\r",
+              "    const jwtRegex = /^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)$/;\r",
+              "    pm.expect(jsonData.accessToken).to.match(jwtRegex);\r",
+              "    \r",
+              "    pm.expect(jsonData).to.have.property('username', pm.collectionVariables.get('new_user_username'));\r",
+              "});\r",
+              "\r",
+              "pm.test(\"В ответе присутствует установленная кука авторизации\", function () {\r",
+              "    const setCookieHeader = pm.response.headers.get('Set-Cookie');\r",
+              "    \r",
+              "    // Проверяем, что заголовок существует и содержит имя нашей куки\r",
+              "    pm.expect(setCookieHeader).to.not.be.undefined;\r",
+              "    pm.expect(setCookieHeader).to.include('refreshToken=');\r",
+              "    pm.expect(setCookieHeader).to.include('Path=/api/v1/public/auth/refresh');\r",
+              "\r",
+              "    const match = setCookieHeader.match(/refreshToken=([^;]+)/);\r",
+              "    \r",
+              "    pm.expect(match).to.not.be.null; // Проверяем, что регулярка сработала\r",
+              "    \r",
+              "    const tokenValue = match[1]; // Берем чистый токен из первой группы захвата\r",
+              "    \r",
+              "    // Сохраняем в переменную коллекции Postman\r",
+              "    pm.collectionVariables.set(\"new_user_saved_refresh_token\", tokenValue);\r",
+              "\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.collectionVariables.set(\"new_user_access_token\", pm.response.json().accessToken);\r",
+              "// pm.globals.set(\"access_token\", pm.response.json().accessToken);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"{{new_user_username}}\",\r\n    \"password\": \"{{new_user_password}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{publicPath}}/login",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{publicPath}}",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get my card (no card yet)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем, что сервер вернул успешный статус 200 OK\r",
+              "pm.test(\"Статус ответа должен быть 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем структуру ответа и то, что карт у пользователя нет\r",
+              "pm.test(\"У пользователя не должно быть карт (список пуст)\", function () {\r",
+              "    // Парсим JSON-ответ от сервера\r",
+              "    const responseData = pm.response.json();\r",
+              "    \r",
+              "    // Проверяем, что объект ответа содержит поле 'cards'\r",
+              "    pm.expect(responseData).to.have.property('cards');\r",
+              "    \r",
+              "    // Проверяем, что 'cards' является массивом\r",
+              "    pm.expect(responseData.cards).to.be.an('array');\r",
+              "    \r",
+              "    // Самая главная проверка: длина массива должна быть равна 0\r",
+              "    pm.expect(responseData.cards.length).to.eql(0);\r",
+              "});\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{new_user_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{userPath}}",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{userPath}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create card 1 for new user",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set(\"holderName\", \"JOHN DOE\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем HTTP статус-код\r",
+              "pm.test(\"Статус-код должен быть 201 Created\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем, что пришел валидный JSON\r",
+              "pm.test(\"Ответ сервера является валидным JSON\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "// 3. Глубокая проверка структуры CreateCardResponseDto\r",
+              "pm.test(\"Структура CreateCardResponseDto корректна\", function () {\r",
+              "    const response = pm.response.json();\r",
+              "    \r",
+              "    // Проверка наличия всех полей и их типов данных\r",
+              "    pm.expect(response).to.have.property('cardNumber').and.be.a('string');\r",
+              "    pm.expect(response).to.have.property('uuid').and.be.a('string');\r",
+              "    pm.expect(response).to.have.property('holderName').and.be.a('string');\r",
+              "    pm.expect(response).to.have.property('expiryDate').and.be.a('string');\r",
+              "    pm.expect(response).to.have.property('status').and.be.a('string');\r",
+              "    \r",
+              "    // balance может вернуться как число или как строка-число (зависит от настроек Jackson ObjectMapper)\r",
+              "    pm.expect(response).to.have.property('balance');\r",
+              "});\r",
+              "\r",
+              "// 4. Проверка бизнес-логики значений\r",
+              "pm.test(\"Значения полей ответа соответствуют логике\", function () {\r",
+              "    const response = pm.response.json();\r",
+              "    \r",
+              "    // Проверяем, что имя держателя совпадает с отправленным\r",
+              "    pm.expect(response.holderName).to.eql(\"JOHN DOE\");\r",
+              "    \r",
+              "    // Проверяем формат UUID для uuid (регулярное выражение)\r",
+              "    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;\r",
+              "    pm.expect(response.uuid).to.match(uuidRegex);\r",
+              "    \r",
+              "    // Проверяем маскированный номер карты (минимум 12-16 символов, включая пробелы)\r",
+              "    pm.expect(response.cardNumber.length).to.be.at.least(12);\r",
+              "    \r",
+              "    // Проверяем, что статус заглавными буквами (например, ACTIVE)\r",
+              "    pm.expect(response.status).to.match(/^[A-Z_]+$/);\r",
+              "    \r",
+              "    // Проверяем формат даты ISO 8601 (Instant)\r",
+              "    const isoDateRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/;\r",
+              "    pm.expect(response.expiryDate).to.match(isoDateRegex);\r",
+              "});\r",
+              "\r",
+              "// 5. Сохраняем ID созданной карты в переменную окружения для следующих запросов\r",
+              "const responseData = pm.response.json();\r",
+              "if (responseData && responseData.uuid) {\r",
+              "    pm.collectionVariables.set(\"card_1_uuid\", responseData.uuid);\r",
+              "}\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{main_admin_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userName\": \"{{new_user_username}}\",\r\n  \"holderName\": \"{{holderName}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{adminPath}}",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{adminPath}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create card 2 for new user",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set(\"holderName\", \"JOHN DOE\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем HTTP статус-код\r",
+              "pm.test(\"Статус-код должен быть 201 Created\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем, что пришел валидный JSON\r",
+              "pm.test(\"Ответ сервера является валидным JSON\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "// 3. Глубокая проверка структуры CreateCardResponseDto\r",
+              "pm.test(\"Структура CreateCardResponseDto корректна\", function () {\r",
+              "    const response = pm.response.json();\r",
+              "    \r",
+              "    // Проверка наличия всех полей и их типов данных\r",
+              "    pm.expect(response).to.have.property('cardNumber').and.be.a('string');\r",
+              "    pm.expect(response).to.have.property('uuid').and.be.a('string');\r",
+              "    pm.expect(response).to.have.property('holderName').and.be.a('string');\r",
+              "    pm.expect(response).to.have.property('expiryDate').and.be.a('string');\r",
+              "    pm.expect(response).to.have.property('status').and.be.a('string');\r",
+              "    \r",
+              "    // balance может вернуться как число или как строка-число (зависит от настроек Jackson ObjectMapper)\r",
+              "    pm.expect(response).to.have.property('balance');\r",
+              "});\r",
+              "\r",
+              "// 4. Проверка бизнес-логики значений\r",
+              "pm.test(\"Значения полей ответа соответствуют логике\", function () {\r",
+              "    const response = pm.response.json();\r",
+              "    \r",
+              "    // Проверяем, что имя держателя совпадает с отправленным\r",
+              "    pm.expect(response.holderName).to.eql(\"JOHN DOE\");\r",
+              "    \r",
+              "    // Проверяем формат UUID для uuid (регулярное выражение)\r",
+              "    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;\r",
+              "    pm.expect(response.uuid).to.match(uuidRegex);\r",
+              "    \r",
+              "    // Проверяем маскированный номер карты (минимум 12-16 символов, включая пробелы)\r",
+              "    pm.expect(response.cardNumber.length).to.be.at.least(12);\r",
+              "    \r",
+              "    // Проверяем, что статус заглавными буквами (например, ACTIVE)\r",
+              "    pm.expect(response.status).to.match(/^[A-Z_]+$/);\r",
+              "    \r",
+              "    // Проверяем формат даты ISO 8601 (Instant)\r",
+              "    const isoDateRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/;\r",
+              "    pm.expect(response.expiryDate).to.match(isoDateRegex);\r",
+              "});\r",
+              "\r",
+              "// 5. Сохраняем ID созданной карты в переменную окружения для следующих запросов\r",
+              "const responseData = pm.response.json();\r",
+              "if (responseData && responseData.uuid) {\r",
+              "    pm.collectionVariables.set(\"card_2_uuid\", responseData.uuid);\r",
+              "}\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{main_admin_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userName\": \"{{new_user_username}}\",\r\n  \"holderName\": \"{{holderName}}\",\r\n  \"initBalance\": 1000\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{adminPath}}",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{adminPath}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get my card (2 cards)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем, что сервер вернул успешный статус 200 OK\r",
+              "pm.test(\"Статус ответа должен быть 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем количество карт и их балансы\r",
+              "pm.test(\"У пользователя ровно две карты с корректными балансами (0 и 1000)\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "    \r",
+              "    // Базовые проверки структуры\r",
+              "    pm.expect(responseData).to.have.property('cards');\r",
+              "    pm.expect(responseData.cards).to.be.an('array');\r",
+              "    pm.expect(responseData.cards.length).to.eql(2);\r",
+              "\r",
+              "    // Извлекаем карты из массива\r",
+              "    const card1 = responseData.cards[0];\r",
+              "    const card2 = responseData.cards[1];\r",
+              "\r",
+              "    // Проверяем баланс Первой карты (должен быть 250)\r",
+              "    // Number(card1.balance) преобразует и число, и строку \"250.00\" в обычное число для проверки\r",
+              "    pm.expect(Number(card1.balance)).to.eql(0);\r",
+              "\r",
+              "    // Проверяем баланс Второй карты (должен быть 750)\r",
+              "    pm.expect(Number(card2.balance)).to.eql(1000);\r",
+              "});\r",
+              "\r",
+              "// 3. Дополнительная детальная проверка структуры данных (поля и UUID)\r",
+              "pm.test(\"Структура карт в ответе полностью валидна\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;\r",
+              "    const expectedHolder = pm.collectionVariables.get(\"holderName\");\r",
+              "\r",
+              "    responseData.cards.forEach((card, index) => {\r",
+              "        pm.expect(card).to.have.property('uuid').and.be.a('string');\r",
+              "        pm.expect(card.uuid).to.match(uuidRegex);\r",
+              "        pm.expect(card).to.have.property('cardNumber').and.be.a('string');\r",
+              "        pm.expect(card).to.have.property('status').and.be.a('string');\r",
+              "        pm.expect(card).to.have.property('balance');\r",
+              "        \r",
+              "        // Проверяем имя держателя, если переменная holderName задана в коллекции\r",
+              "        if (expectedHolder) {\r",
+              "            pm.expect(card.holderName).to.eql(expectedHolder);\r",
+              "        }\r",
+              "    });\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{new_user_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{userPath}}",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{userPath}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Transfer from card 2 into card 1",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем HTTP статус-код успеха\r",
+              "pm.test(\"Статус-код должен быть 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем, что тело ответа пустое (так как метод возвращает Void)\r",
+              "pm.test(\"Тело ответа должно быть пустым\", function () {\r",
+              "    pm.expect(pm.response.text()).to.be.empty;\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{new_user_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"fromCardId\": \"{{card_2_uuid}}\",\r\n  \"toCardId\": \"{{card_1_uuid}}\",\r\n  \"amount\": 250\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{userPath}}/transfer",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{userPath}}",
+            "transfer"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Check balance of card 1",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем успешный статус-код\r",
+              "pm.test(\"Статус ответа должен быть 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем валидность формата JSON\r",
+              "pm.test(\"Ответ пришел в формате JSON\", function () {\r",
+              "    pm.response.to.be.withBody;\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "// 3. Проверяем точное значение баланса первой карты\r",
+              "pm.test(\"Баланс первой карты равен 250\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "    \r",
+              "    // Проверяем наличие поля balance в GetCardBalanceResponseDto\r",
+              "    pm.expect(responseData).to.have.property('balance');\r",
+              "    \r",
+              "    // Преобразуем значение баланса в число для надежной проверки\r",
+              "    const actualBalance = Number(responseData.balance);\r",
+              "    pm.expect(actualBalance).to.eql(250);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{new_user_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cardId\": \"{{card_1_uuid}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{userPath}}/balance",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{userPath}}",
+            "balance"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Check balance of card 2",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем успешный статус-код\r",
+              "pm.test(\"Статус ответа должен быть 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем валидность формата JSON\r",
+              "pm.test(\"Ответ пришел в формате JSON\", function () {\r",
+              "    pm.response.to.be.withBody;\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "// 3. Проверяем точное значение баланса второй карты\r",
+              "pm.test(\"Баланс второй карты равен 750\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "    \r",
+              "    // Проверяем наличие поля balance в GetCardBalanceResponseDto\r",
+              "    pm.expect(responseData).to.have.property('balance');\r",
+              "    \r",
+              "    // Преобразуем значение баланса в число для надежной проверки\r",
+              "    const actualBalance = Number(responseData.balance);\r",
+              "    pm.expect(actualBalance).to.eql(750);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{new_user_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cardId\": \"{{card_2_uuid}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{userPath}}/balance",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{userPath}}",
+            "balance"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Block card 2",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Verify successful HTTP status code\r",
+              "pm.test(\"Status code is 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Verify that the response body is empty (ResponseEntity<Void>)\r",
+              "pm.test(\"Response body is empty\", function () {\r",
+              "    pm.expect(pm.response.text()).to.be.empty;\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{new_user_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cardId\": \"{{card_2_uuid}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{userPath}}/block",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{userPath}}",
+            "block"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Check the blocked card 2",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Verify successful HTTP status code\r",
+              "pm.test(\"Status code is 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Verify that the response body is valid JSON\r",
+              "pm.test(\"Response body is a valid JSON\", function () {\r",
+              "    pm.response.to.be.withBody;\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "// 3. Verify the filtered list contains exactly your blocked second card\r",
+              "pm.test(\"The list of BLOCKED cards contains exactly the second card\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "    const expectedUuid = pm.variables.get(\"card_2_uuid\");\r",
+              "    \r",
+              "    // Core structure checks\r",
+              "    pm.expect(responseData).to.have.property('cards');\r",
+              "    pm.expect(responseData.cards).to.be.an('array');\r",
+              "    \r",
+              "    // Since only one card was blocked, the filtered list length should be exactly 1\r",
+              "    pm.expect(responseData.cards.length).to.eql(1);\r",
+              "\r",
+              "    // Extract the blocked card from the response\r",
+              "    const blockedCard = responseData.cards[0];\r",
+              "\r",
+              "    // Assert that this card matches your second card's UUID\r",
+              "    pm.expect(blockedCard.uuid).to.eql(expectedUuid);\r",
+              "    \r",
+              "    // Double check that the server actually respected the filter\r",
+              "    pm.expect(blockedCard.status).to.eql(\"BLOCKED\");\r",
+              "    \r",
+              "    // Double check that its balance is still 750\r",
+              "    pm.expect(Number(blockedCard.balance)).to.eql(750);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{new_user_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": \"BLOCKED\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{userPath}}",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{userPath}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Set the card 1 expired",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Verify successful HTTP status code\r",
+              "pm.test(\"Status code is 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Verify that the response body is empty (ResponseEntity<Void>)\r",
+              "pm.test(\"Response body is empty\", function () {\r",
+              "    pm.expect(pm.response.text()).to.be.empty;\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{main_admin_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cardId\": \"{{card_1_uuid}}\",\r\n  \"cardStatus\": \"EXPIRED\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{adminPath}}/status",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{adminPath}}",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Check the expired card 1",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Verify successful HTTP status code\r",
+              "pm.test(\"Status code is 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Verify that the response body is valid JSON\r",
+              "pm.test(\"Response body is a valid JSON\", function () {\r",
+              "    pm.response.to.be.withBody;\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "// 3. Verify the filtered list contains exactly your newly EXPIRED first card\r",
+              "pm.test(\"The list of EXPIRED cards contains exactly the first card\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "    const expectedUuid = pm.variables.get(\"card_1_uuid\");\r",
+              "    \r",
+              "    // Core structure checks\r",
+              "    pm.expect(responseData).to.have.property('cards');\r",
+              "    pm.expect(responseData.cards).to.be.an('array');\r",
+              "    \r",
+              "    // Since only one card was marked as expired, the filtered list length should be exactly 1\r",
+              "    pm.expect(responseData.cards.length).to.eql(1);\r",
+              "\r",
+              "    // Extract the expired card from the response array\r",
+              "    const expiredCard = responseData.cards[0];\r",
+              "\r",
+              "    // Assert that this card matches your first card's identity details\r",
+              "    pm.expect(expiredCard.uuid).to.eql(expectedUuid);\r",
+              "    \r",
+              "    // Double check that the server successfully stored and returned the EXPIRED status\r",
+              "    pm.expect(expiredCard.status).to.eql(\"EXPIRED\");\r",
+              "    \r",
+              "    // Double check that its balance remains untouched at 250\r",
+              "    pm.expect(Number(expiredCard.balance)).to.eql(250);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{main_admin_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userName\": \"{{new_user_username}}\",\r\n  \"status\": \"EXPIRED\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{adminPath}}/search",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{adminPath}}",
+            "search"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Check the expired card 1 Copy",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Verify successful HTTP status code\r",
+              "pm.test(\"Status code is 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Verify that the response body is completely empty (ResponseEntity<Void>)\r",
+              "pm.test(\"Response body is empty\", function () {\r",
+              "    pm.expect(pm.response.text()).to.be.empty;\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{main_admin_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"cardId\": \"{{card_1_uuid}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{adminPath}}",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{adminPath}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get my card (1 card remains)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем, что сервер вернул успешный статус 200 OK\r",
+              "pm.test(\"Статус ответа должен быть 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем количество карт и их балансы\r",
+              "pm.test(\"У пользователя ровно две карты с корректными балансами (0 и 1000)\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "    \r",
+              "    // Базовые проверки структуры\r",
+              "    pm.expect(responseData).to.have.property('cards');\r",
+              "    pm.expect(responseData.cards).to.be.an('array');\r",
+              "    pm.expect(responseData.cards.length).to.eql(1);\r",
+              "\r",
+              "    // Извлекаем карты из массива\r",
+              "    const card1 = responseData.cards[0];\r",
+              "\r",
+              "    // Проверяем баланс Первой карты (должен быть 250)\r",
+              "    // Number(card1.balance) преобразует и число, и строку \"250.00\" в обычное число для проверки\r",
+              "    pm.expect(Number(card1.balance)).to.eql(750);\r",
+              "\r",
+              "});\r",
+              "\r",
+              "// 3. Дополнительная детальная проверка структуры данных (поля и UUID)\r",
+              "pm.test(\"Структура карт в ответе полностью валидна\", function () {\r",
+              "    const responseData = pm.response.json();\r",
+              "    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;\r",
+              "    const expectedHolder = pm.collectionVariables.get(\"holderName\");\r",
+              "\r",
+              "    responseData.cards.forEach((card, index) => {\r",
+              "        pm.expect(card).to.have.property('uuid').and.be.a('string');\r",
+              "        pm.expect(card.uuid).to.match(uuidRegex);\r",
+              "        pm.expect(card).to.have.property('cardNumber').and.be.a('string');\r",
+              "        pm.expect(card).to.have.property('status').and.be.a('string');\r",
+              "        pm.expect(card).to.have.property('balance');\r",
+              "        \r",
+              "        // Проверяем имя держателя, если переменная holderName задана в коллекции\r",
+              "        if (expectedHolder) {\r",
+              "            pm.expect(card.holderName).to.eql(expectedHolder);\r",
+              "        }\r",
+              "    });\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{new_user_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{userPath}}",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{userPath}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "port",
+      "value": "8080"
+    },
+    {
+      "key": "domain",
+      "value": "localhost"
+    },
+    {
+      "key": "publicPath",
+      "value": "api/v1/public/auth"
+    },
+    {
+      "key": "privatePath",
+      "value": "api/v1/private/auth"
+    },
+    {
+      "key": "userPath",
+      "value": "api/v1/user/cards"
+    },
+    {
+      "key": "adminPath",
+      "value": "api/v1/admin/cards"
+    }
+  ]
+}

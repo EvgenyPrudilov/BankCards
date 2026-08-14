@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @Schema(
@@ -18,6 +19,12 @@ public class CreateCardResponseDto {
         example = "4312 8900 1122 3344"
     )
     private String cardNumber;
+
+    @Schema(
+        description = "The unique identifier of the card.",
+        example = "123e4567-e89b-12d3-a456-426614174000"
+    )
+    private UUID uuid;
 
     @Schema(
         description = "The full name of the cardholder in capital Latin letters.",

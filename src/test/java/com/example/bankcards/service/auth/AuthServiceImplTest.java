@@ -71,23 +71,23 @@ class AuthServiceImplTest {
         @Test
         @DisplayName("Successful registration.")
         void success() {
-            // 1. Given (Предусловия)
+
             when(userRepository.existsByUsername(request.getUsername())).thenReturn(false);
             when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
             when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPass");
 
-            // 2. When (Действие)
+
             assertDoesNotThrow(() -> authService.registerNewUser(request));
 
-            // 3. Then (Проверки)
+
             verify(userRepository, times(1)).save(userEntityCaptor.capture());
             UserEntity savedUser = userEntityCaptor.getValue();
 
-            // Проверяем, что все поля внутри сущности заполнились корректно
+
             assertNotNull(savedUser);
             assertEquals("user", savedUser.getUsername());
             assertEquals("encodedPass", savedUser.getPassword());
-            assertEquals(UserRole.ROLE_USER, savedUser.getRole());
+            assertEquals(UserRole.USER, savedUser.getRole());
             assertEquals("email@test.com", savedUser.getEmail());
             assertTrue(savedUser.isEnabled());
         }
@@ -129,7 +129,7 @@ class AuthServiceImplTest {
                 .uuid(UUID.randomUUID())
                 .username("user")
                 .password("encodedPass")
-                .role(UserRole.ROLE_USER)
+                .role(UserRole.USER)
                 .enabled(true)
                 .build();
         }
@@ -137,39 +137,36 @@ class AuthServiceImplTest {
         @Test
         @DisplayName("Successful login and access token generation.")
         void success() {
-            // 1. Given (Предусловия)
+
             when(userRepository.findByUsername(request.getUsername())).thenReturn(Optional.of(activeUser));
             when(passwordEncoder.matches(request.getPassword(), activeUser.getPassword())).thenReturn(true);
             when(jwtUtils.generateAccessToken(activeUser.getUuid(), activeUser.getRole())).thenReturn("access-token");
             when(jwtUtils.generateRefreshToken()).thenReturn("refresh-token");
 
-            // Запоминаем примерное время ДО выполнения метода для проверки валидности токена
+
             Instant timeBeforeLogin = Instant.now();
 
-            // 2. When (Действие)
+
             LoginResponse response = authService.login(request);
 
-            // 3. Then (Проверки ответа)
+
             assertNotNull(response);
             assertEquals("access-token", response.getAccessToken());
             assertEquals("refresh-token", response.getRefreshToken());
             assertEquals("user", response.getUsername());
 
-            // 4. Then (Проверки работы с репозиторием токенов)
+
             verify(refreshTokenRepository, times(1)).deleteByUserEntity_Id(activeUser.getId());
 
-            // Перехватываем токен, который ушел на сохранение в базу
+
             verify(refreshTokenRepository, times(1)).save(refreshTokenCaptor.capture());
             RefreshTokenEntity savedToken = refreshTokenCaptor.getValue();
 
-            // Строгие проверки полей сущности токена
-            assertNotNull(savedToken);
-            assertEquals("refresh-token", savedToken.getToken()); // Токен совпадает с тем, что вернул jwtUtils
-            assertEquals(activeUser, savedToken.getUserEntity());  // Токен привязан именно к нашему пользователю
 
-            // Проверяем, что срок действия рассчитан верно (должен быть: время_сейчас + 10 минут)
-            // Так как выполнение кода занимает миллисекунды, проверяем, что expiryDate находится в правильном диапазоне
-            Instant expectedExpiryDate = timeBeforeLogin.plusMillis(600000L); // 600000L — наш REFRESH_EXPIRATION_MS
+            assertNotNull(savedToken);
+            assertEquals("refresh-token", savedToken.getToken());
+            assertEquals(activeUser, savedToken.getUserEntity());
+            Instant expectedExpiryDate = timeBeforeLogin.plusMillis(600000L);
             assertTrue(savedToken.getExpiryDate().isAfter(timeBeforeLogin));
             assertTrue(savedToken.getExpiryDate().isBefore(expectedExpiryDate.plusSeconds(5)));
         }
@@ -234,7 +231,7 @@ class AuthServiceImplTest {
         @Test
         @DisplayName("Successful updating of a pair of tokens.")
         void success() {
-            UserEntity user = UserEntity.builder().id(1L).uuid(UUID.randomUUID()).username("user").role(UserRole.ROLE_USER).build();
+            UserEntity user = UserEntity.builder().id(1L).uuid(UUID.randomUUID()).username("user").role(UserRole.USER).build();
             RefreshTokenEntity oldToken = mock(RefreshTokenEntity.class);
 
             when(oldToken.isExpired()).thenReturn(false);

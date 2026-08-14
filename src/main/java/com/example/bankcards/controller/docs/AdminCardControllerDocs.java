@@ -41,7 +41,7 @@ public interface AdminCardControllerDocs {
         @ApiResponse(responseCode = "403", description = "User does not have the required administrative permissions.", content = @Content)
     })
     ResponseEntity<GetCardsResponseDto> getAllCards(
-        GetCardsRequestDto requestDto,
+        GetCardsAdminRequestDto requestDto,
         @Parameter(
             description = "Pagination parameters including page, size, and sort.",
             example = "{\"page\": 0, \"size\": 10}",

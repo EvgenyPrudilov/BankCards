@@ -1,6 +1,9 @@
 package com.example.bankcards.controller.docs;
 
-import com.example.bankcards.dto.auth.*;
+import com.example.bankcards.dto.auth.AdminRegisterDto;
+import com.example.bankcards.dto.auth.LoginRequestDto;
+import com.example.bankcards.dto.auth.RegisterRequestDto;
+import com.example.bankcards.dto.auth.TokenResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

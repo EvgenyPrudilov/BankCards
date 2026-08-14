@@ -5,7 +5,6 @@ import com.example.bankcards.entity.CardEntity;
 import com.example.bankcards.service.model.*;
 import com.example.bankcards.util.MaskingUtils;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
@@ -28,6 +27,8 @@ public interface CardMapper {
 
     GetCardsRequest toDomain(GetCardsRequestDto requestDto);
 
+    GetCardsAdminRequest toDomain(GetCardsAdminRequestDto requestDto);
+
     GetCardBalanceResponseDto toDto(GetCardBalanceResponse request);
 
     GetCardBalanceRequest toDomain(GetCardBalanceRequestDto requestDto);
@@ -45,6 +46,6 @@ public interface CardMapper {
         return response;
     }
 
-    List<GetCardsRequestDto> toCardResponseDtoList(List<CardEntity> content);
+    List<GetCardResponseDto> toCardResponseDtoList(List<CardEntity> content);
 
 }

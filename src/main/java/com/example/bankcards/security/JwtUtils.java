@@ -23,6 +23,7 @@ public class JwtUtils {
     private final PrivateKey privateKey;
     @Getter
     private final PublicKey publicKey;
+    private final String keyStoreType = "PKCS12";
     @Value("${app.jwt.users.access-key-audience}")
     List<String> usersAccessKeyAudience;
     @Value("${app.jwt.users.expiration-ms}")
@@ -31,7 +32,6 @@ public class JwtUtils {
     private String jwtKeyId;
     @Value("${app.jwt.common.issuer}")
     private String issuer;
-    private final String keyStoreType = "PKCS12";
 
     public JwtUtils(
         @Value("${app.jwt.common.keystore.location}") Resource storeLocation,
@@ -102,7 +102,7 @@ public class JwtUtils {
             .build()
             .parseSignedClaims(token)
             .getPayload()
-            .get("roles", List.class); // Извлекаем как сырой List
+            .get("roles", List.class);
 
         if (roles != null && !roles.isEmpty()) {
             return roles.stream()

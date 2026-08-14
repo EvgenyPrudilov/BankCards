@@ -63,7 +63,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: uuid # Добавлена пропущенная колонка uuid для CardEntity
+                  name: uuid
                   type: uuid
                   constraints:
                     nullable: false
@@ -164,7 +164,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: token # Изменено на тип uuid согласно AdminInvitationEntity
+                  name: token
                   type: uuid
                   constraints:
                     nullable: false

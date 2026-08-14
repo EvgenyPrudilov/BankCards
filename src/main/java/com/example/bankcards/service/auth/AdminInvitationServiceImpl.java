@@ -66,7 +66,7 @@ public class AdminInvitationServiceImpl implements AdminInvitationService {
             .password(passwordEncoder.encode(adminRegister.getPassword()))
             .email(invitation.getEmail())
             .enabled(true)
-            .role(UserRole.ROLE_ADMIN)
+            .role(UserRole.ADMIN)
             .build();
 
         userRepository.save(admin);
