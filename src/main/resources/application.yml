@@ -1,0 +1,88 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: cards-service
+
+  mvc:
+    problemdetails:
+      enabled: true
+
+  datasource:
+    url: "${DATASOURCE_URL}"
+    username: "${DATASOURCE_USERNAME}"
+    password: "${DATASOURCE_PASSWORD}"
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/db.changelog-master.yml
+
+app:
+  refresh-token:
+    path: "/api/v1/public/auth/refresh"
+    max-age-s: 604800
+  jwt:
+    common:
+      issuer: ${spring.application.name}
+      key-id: "auth-server-ec-key"
+      keystore:
+        location: ${SERVICE_JWT_KEYSTORE_LOCATION}
+        password: ${SERVICE_JWT_KEYSTORE_PASSWORD}
+        alias: ${SERVICE_JWT_KEYSTORE_ALIAS}
+    users:
+      expiration-ms: 900000
+      refresh-expiration-ms: 2592000000
+      access-key-audience: cards-service
+  admin:
+    invite:
+#      base-url: ${ADMIN_INVITE_BASE_URL}
+      expiration-ms: 900000
+
+
+
+springdoc:
+  packages-to-scan:
+    - com.example.bankcards.controller
+    - com.example.bankcards.dto.auth
+    - com.example.bankcards.dto.card
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    persistAuthorization: true
+  writer-with-default-pretty-printer: true
+
+logging:
+  level:
+    # 1. Логирование входящих HTTP-запросов, параметров и работы контроллеров (исправлена опечатка 'slider')
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
+
+    # 2. Логирование всей цепочки фильтров Spring Security (покажет, почему отклонен токен/запрос)
+    org.springframework.security: DEBUG
+
+    # 3. Логирование значений (параметров bind), которые подставляются в SQL-запросы Hibernate
+    org.hibernate.orm.results: TRACE
+    org.hibernate.resource.transaction: DEBUG
+
+    # 4. Логирование процесса сериализации/десериализации JSON (ошибки парсинга тела запроса)
+    org.springframework.http.converter.json: DEBUG
+
+

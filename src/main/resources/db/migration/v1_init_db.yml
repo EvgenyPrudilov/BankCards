@@ -1,0 +1,195 @@
+databaseChangeLog:
+  # Изменение 1: Создание таблицы Пользователей (users)
+  - changeSet:
+      id: 20260810-01
+      author: developer
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: uuid
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+
+  # Изменение 2: Создание таблицы Карточек (cards) и связи Foreign Key
+  - changeSet:
+      id: 20260810-02
+      author: developer
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: uuid # Добавлена пропущенная колонка uuid для CardEntity
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: encrypted_number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: holder_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiry_date
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: numeric(15,2)
+                  constraints:
+                    nullable: false
+
+        # Настройка внешнего ключа (Связь Один-ко-Многим между картой и пользователем)
+        - addForeignKeyConstraint:
+            baseTableName: cards
+            baseColumnNames: user_id
+            constraintName: fk_cards_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  # Изменение 3: Создание таблицы токенов обновления (refresh_tokens)
+  - changeSet:
+      id: 20260810-03
+      author: developer
+      changes:
+        - createTable:
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: expiry_date
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+
+        # Настройка One-to-One связи внешнего ключа
+        - addForeignKeyConstraint:
+            baseTableName: refresh_tokens
+            baseColumnNames: user_id
+            constraintName: fk_refresh_tokens_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  # Изменение 4: Создание таблицы Инвайтов для Админов (admin_invitations)
+  - changeSet:
+      id: 20260810-04
+      author: developer
+      changes:
+        - createTable:
+            tableName: admin_invitations
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: token # Изменено на тип uuid согласно AdminInvitationEntity
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: expiry_date
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: used
+                  type: boolean
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 20260812-01
+      author: developer
+      changes:
+        - modifyDataType:
+            tableName: admin_invitations
+            columnName: token
+            newDataType: uuid

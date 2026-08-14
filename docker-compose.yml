@@ -1,0 +1,64 @@
+
+services:
+
+  spring-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bank_cards_app
+    ports:
+      - "${SERVICE_EXTERNAL_PORT}:${SERVICE_INNER_PORT}"
+    environment:
+      DATASOURCE_URL: "jdbc:postgresql://postgres-db:${DB_INNER_PORT}/${DB_NAME}"
+      DATASOURCE_USERNAME: "${DB_USERNAME}"
+      DATASOURCE_PASSWORD: "${DB_PASSWORD}"
+      SERVICE_JWT_KEYSTORE_LOCATION: "${SERVICE_JWT_KEYSTORE_LOCATION}"
+      SERVICE_JWT_KEYSTORE_PASSWORD: "${SERVICE_JWT_KEYSTORE_PASSWORD}"
+      SERVICE_JWT_KEYSTORE_ALIAS: "${SERVICE_JWT_KEYSTORE_ALIAS}"
+#      ADMIN_INVITE_BASE_URL: "${SERVICE_ADMIN_INVITE_BASE_URL}"
+#      ADMIN_INVITE_EXPIRATION_MS: "${SERVICE_ADMIN_INVITE_EXPIRATION_MS}"
+      INIT_ADMIN_USERNAME: "${SERVICE_INIT_ADMIN_USERNAME}"
+      INIT_ADMIN_PASSWORD: "${SERVICE_INIT_ADMIN_PASSWORD}"
+      INIT_ADMIN_EMAIL: "${SERVICE_INIT_ADMIN_EMAIL}"
+
+#    volumes:
+#      - ./keystore.p12:/app/resources/keystore.p12
+
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+  #    networks:
+  #      - bank-network
+  #    restart: always
+
+
+
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: bank_cards_db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_EXTERNAL_PORT}:${DB_INNER_PORT}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+#    networks:
+#      - bank-network
+    healthcheck:
+      # Динамически подставляем данные пользователя и базы для проверки готовности
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+
+#networks:
+#  bank-network:
+#    driver: bridge
+
+volumes:
+  pgdata:
+#    driver: local

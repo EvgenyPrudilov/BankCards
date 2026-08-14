@@ -1,0 +1,9 @@
+keytool -genkeypair
+    -alias ALIAS
+    -keyalg EC
+    -groupname secp256r1
+    -validity 365
+    -keystore keystore.p12
+    -storetype PKCS12
+    -storepass PASSWORD
+    -dname "CN=auth-server, OU=Development, O=Cohenrol, C=NL" -noprompt

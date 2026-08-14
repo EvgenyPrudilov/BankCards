@@ -1,0 +1,742 @@
+---
+openapi: 3.1.0
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+tags:
+  - name: Private Authentication Management
+    description: Authorized security and administrative invitation operations.
+  - name: Admin Cards Management
+    description: Administrative operations for bank cards management.
+  - name: Public Authentication Management (no token needed)
+    description: Public operations for user registration, authentication, and token
+      refreshing.
+  - name: User Cards Management
+    description: Operations related to user bank cards management.
+paths:
+  "/api/v1/user/cards":
+    post:
+      tags:
+        - User Cards Management
+      summary: Get user cards list. (YES, it's POST)
+      description: Returns a paginated list of cards belonging to the currently authenticated
+        user. The user identifier is extracted from the JWT token. Requires **ROLE_USER**
+        authority.
+      operationId: getMyCards
+      parameters:
+        - name: pageable
+          in: query
+          description: Pagination parameters including page, size, and sort.
+          required: true
+          schema:
+            type: object
+          example:
+            page: 0
+            size: 10
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/GetCardsRequestDto"
+        required: true
+      responses:
+        '200':
+          description: Card list successfully retrieved.
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetCardsResponseDto"
+        '400':
+          description: Invalid request parameters provided.
+        '401':
+          description: User is not authenticated.
+        '403':
+          description: User does not have the required permissions.
+      security:
+        - BearerAuth: []
+  "/api/v1/user/cards/transfer":
+    post:
+      tags:
+        - User Cards Management
+      summary: Transfer between own cards.
+      description: Executes a fund transfer from one card account of the current user
+        to another card account of the same user. Requires **ROLE_USER** authority
+        and ownership of both cards.
+      operationId: transferBetweenOwnCards
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/TransferRequestDto"
+        required: true
+      responses:
+        '200':
+          description: Transfer successfully completed.
+        '400':
+          description: Insufficient funds or invalid transfer parameters.
+        '401':
+          description: User is not authenticated.
+        '403':
+          description: User does not have the required permissions.
+        '404':
+          description: One or both cards not found.
+      security:
+        - BearerAuth: []
+  "/api/v1/user/cards/block":
+    post:
+      tags:
+        - User Cards Management
+      summary: Block card.
+      description: Submits a request to block the specified card of the current user.
+        Once blocked, transactions on this card will be unavailable. Requires **ROLE_USER**
+        authority and ownership of the card.
+      operationId: blockCard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BlockCardRequestDto"
+        required: true
+      responses:
+        '200':
+          description: Card successfully blocked.
+        '400':
+          description: Data validation error occurred.
+        '401':
+          description: User is not authenticated.
+        '403':
+          description: User does not have the required permissions.
+        '404':
+          description: Card not found.
+      security:
+        - BearerAuth: []
+  "/api/v1/user/cards/balance":
+    post:
+      tags:
+        - User Cards Management
+      summary: Get card balance. (YES, it's POST)
+      description: Returns the current balance and currency for the specified card
+        belonging to the user. Requires **ROLE_USER** authority and ownership of the
+        card.
+      operationId: getBalance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/GetCardBalanceRequestDto"
+        required: true
+      responses:
+        '200':
+          description: Card balance successfully retrieved.
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetCardBalanceResponseDto"
+        '400':
+          description: Invalid card ID format or empty request body.
+        '401':
+          description: User is not authenticated.
+        '403':
+          description: User does not have the required permissions.
+        '404':
+          description: Card not found or does not belong to the user.
+      security:
+        - BearerAuth: []
+  "/api/v1/public/auth/register":
+    post:
+      tags:
+        - Public Authentication Management (no token needed)
+      summary: Register a new user.
+      description: Creates a new client account in the system with the provided credentials.
+        This endpoint is public.
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/RegisterRequestDto"
+        required: true
+      responses:
+        '201':
+          description: User successfully registered.
+        '400':
+          description: Invalid registration data or username already exists.
+  "/api/v1/public/auth/refresh":
+    post:
+      tags:
+        - Public Authentication Management (no token needed)
+      summary: Refresh access token.
+      description: Validates the provided HttpOnly refresh token cookie. Issues a
+        new access token and updates the refresh token cookie. This endpoint is public.
+      operationId: refresh
+      parameters:
+        - name: refreshToken
+          in: cookie
+          description: The secure HttpOnly refresh token required to get a new access
+            token.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tokens successfully refreshed.
+          headers:
+            Set-Cookie:
+              description: Contains the updated HttpOnly 'refreshToken' cookie.
+              style: simple
+              schema:
+                type: string
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/TokenResponseDto"
+        '401':
+          description: Refresh token is expired, invalid, or missing.
+  "/api/v1/public/auth/login":
+    post:
+      tags:
+        - Public Authentication Management (no token needed)
+      summary: Authenticate user and login.
+      description: Verifies user credentials. Returns an access token in the response
+        body and sets a secure HttpOnly refresh token cookie. This endpoint is public.
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/LoginRequestDto"
+        required: true
+      responses:
+        '200':
+          description: Authentication successful. Tokens generated.
+          headers:
+            Set-Cookie:
+              description: Contains the HttpOnly 'refreshToken' cookie.
+              style: simple
+              schema:
+                type: string
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/TokenResponseDto"
+        '400':
+          description: Missing or invalid request payload fields.
+        '401':
+          description: Bad credentials or account is disabled.
+  "/api/v1/public/auth/admin/register":
+    post:
+      tags:
+        - Public Authentication Management (no token needed)
+      summary: Complete administrative registration.
+      description: Registers an administrative user account using a special sign-up
+        token or pre-authorized invitation payload. This endpoint is public.
+      operationId: completeAdminRegistration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/AdminRegisterDto"
+        required: true
+      responses:
+        '200':
+          description: Administrative user successfully registered.
+        '400':
+          description: Invalid administrative registration payload.
+        '403':
+          description: The registration token or signature is invalid.
+  "/api/v1/private/auth/logout":
+    post:
+      tags:
+        - Private Authentication Management
+      summary: Log out current user.
+      description: Invalidates the user session on the server side and clears the
+        secure HttpOnly 'refreshToken' cookie by setting its max-age to 0. Requires
+        a valid JWT token.
+      operationId: logout
+      responses:
+        '200':
+          description: Successfully logged out. Refresh token cookie cleared.
+          headers:
+            Set-Cookie:
+              description: Clears the HttpOnly 'refreshToken' cookie.
+              style: simple
+              schema:
+                type: string
+        '401':
+          description: User is not authenticated.
+      security:
+        - BearerAuth: []
+  "/api/v1/private/auth/admin/invitations":
+    post:
+      tags:
+        - Private Authentication Management
+      summary: Create an administrative invitation.
+      description: Generates a unique registration token or invitation link sent to
+        the specified email to allow a new admin user to register. Requires **ROLE_ADMIN**
+        authority.
+      operationId: inviteNewAdmin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/AdminInviteRequestDto"
+        required: true
+      responses:
+        '200':
+          description: Administrative invitation successfully created.
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/AdminInvitationResponseDto"
+        '400':
+          description: Invalid invitation request payload or email format.
+        '401':
+          description: User is not authenticated.
+        '403':
+          description: User does not have the required administrative permissions.
+      security:
+        - BearerAuth: []
+  "/api/v1/admin/cards":
+    post:
+      tags:
+        - Admin Cards Management
+      summary: Create a new bank card.
+      description: Issues a new bank card based on the provided request details. Requires
+        **ROLE_ADMIN** authority.
+      operationId: createCard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateCardRequestDto"
+        required: true
+      responses:
+        '201':
+          description: Card successfully created.
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/CreateCardResponseDto"
+        '400':
+          description: Invalid payload or validation error occurred.
+        '401':
+          description: User is not authenticated.
+        '403':
+          description: User does not have the required administrative permissions.
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - Admin Cards Management
+      summary: Delete a bank card.
+      description: Permanently deletes or soft-deletes a specific bank card from the
+        system. Requires **ROLE_ADMIN** authority.
+      operationId: deleteCard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/DeleteCardRequestDto"
+        required: true
+      responses:
+        '200':
+          description: Card successfully deleted.
+        '400':
+          description: Invalid target card parameters provided.
+        '401':
+          description: User is not authenticated.
+        '403':
+          description: User does not have the required administrative permissions.
+        '404':
+          description: Target bank card not found.
+      security:
+        - BearerAuth: []
+  "/api/v1/admin/cards/search":
+    post:
+      tags:
+        - Admin Cards Management
+      summary: Get filtered list of all cards. (YES, it's POST)
+      description: Returns a paginated list of bank cards matching the search criteria
+        specified in the request body. Requires **ROLE_ADMIN** authority.
+      operationId: getAllCards
+      parameters:
+        - name: pageable
+          in: query
+          description: Pagination parameters including page, size, and sort.
+          required: true
+          schema:
+            type: object
+          example:
+            page: 0
+            size: 10
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/GetCardsRequestDto"
+        required: true
+      responses:
+        '200':
+          description: Card list successfully retrieved.
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetCardsResponseDto"
+        '400':
+          description: Invalid search or pagination parameters provided.
+        '401':
+          description: User is not authenticated.
+        '403':
+          description: User does not have the required administrative permissions.
+      security:
+        - BearerAuth: []
+  "/api/v1/admin/cards/status":
+    patch:
+      tags:
+        - Admin Cards Management
+      summary: Update card status.
+      description: Changes the status of a specific bank card (e.g., active, blocked,
+        suspended). Requires **ROLE_ADMIN** authority.
+      operationId: updateStatus
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateCardStatusRequestDto"
+        required: true
+      responses:
+        '200':
+          description: Card status successfully updated.
+        '400':
+          description: Invalid status value or missing payload fields.
+        '401':
+          description: User is not authenticated.
+        '403':
+          description: User does not have the required administrative permissions.
+        '404':
+          description: Target bank card not found.
+      security:
+        - BearerAuth: []
+components:
+  schemas:
+    GetCardsRequestDto:
+      type: object
+      description: Request payload used to fetch and filter a list of bank cards belonging
+        to a specific user.
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: The unique identifier of the user whose cards are being requested.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        status:
+          type:
+            - string
+            - 'null'
+          description: Optional card status filter. If omitted or null, all cards
+            for the user will be returned.
+          enum:
+            - ACTIVE
+            - BLOCKED
+            - EXPIRED
+          example: ACTIVE
+      required:
+        - userId
+    GetCardsResponseDto:
+      type: object
+      description: Response payload containing the collection of retrieved bank cards
+        for the user.
+      properties:
+        cards:
+          type: array
+          description: The list of bank cards matching the requested criteria or belonging
+            to the specified user.
+          items:
+            "$ref": "#/components/schemas/GetCardsRequestDto"
+    TransferRequestDto:
+      type: object
+      description: Request payload used to execute a financial transfer between two
+        bank cards.
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: The unique identifier of the user executing the transaction.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        fromCardId:
+          type: string
+          format: uuid
+          description: The unique identifier of the source bank card from which funds
+            will be debited.
+          example: 987f6543-e21b-78d3-c987-123456789abc
+        toCardId:
+          type: string
+          format: uuid
+          description: The unique identifier of the destination bank card to which
+            funds will be credited.
+          example: 550e8400-e29b-41d4-a716-446655440000
+        amount:
+          type: number
+          description: The financial amount to be transferred. Must be a positive
+            value.
+          example: 250.5
+          minimum: 0.01
+      required:
+        - amount
+        - fromCardId
+        - toCardId
+        - userId
+    BlockCardRequestDto:
+      type: object
+      description: Request payload used to block a specific bank card within the system.
+      properties:
+        userId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: The unique identifier of the user who owns the card. This field
+            is optional.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        cardId:
+          type: string
+          format: uuid
+          description: The unique identifier of the bank card that needs to be blocked.
+          example: 987f6543-e21b-78d3-c987-123456789abc
+      required:
+        - cardId
+    GetCardBalanceRequestDto:
+      type: object
+      description: Request payload used to check the available financial balance of
+        a specific bank card.
+      properties:
+        userId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: The unique identifier of the user who owns the card. This field
+            is optional.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        cardId:
+          type: string
+          format: uuid
+          description: The unique identifier of the bank card whose balance is being
+            requested.
+          example: 987f6543-e21b-78d3-c987-123456789abc
+      required:
+        - cardId
+    GetCardBalanceResponseDto:
+      type: object
+      description: Response payload containing the current financial balance of the
+        requested bank card.
+      properties:
+        balance:
+          type: number
+          description: The current available financial balance amount on the card.
+          example: 1250.75
+    RegisterRequestDto:
+      type: object
+      description: Request payload used by new consumers to sign up and create a bank
+        user account.
+      properties:
+        username:
+          type: string
+          description: Unique username chosen by the user for account identification.
+          example: bank_customer_7
+          maxLength: 50
+          minLength: 4
+        password:
+          type: string
+          description: Secure password created by the user for account access protection.
+          example: P@ssword2026
+          maxLength: 100
+          minLength: 6
+        email:
+          type: string
+          format: email
+          description: Primary email address used for notifications and account verification.
+          example: customer7@example.com
+          minLength: 1
+      required:
+        - email
+        - password
+        - username
+    TokenResponseDto:
+      type: object
+      description: Response payload containing the generated authentication access
+        token upon successful authentication.
+      properties:
+        accessToken:
+          type: string
+          description: The JWT access token used to authenticate subsequent protected
+            resource requests.
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        username:
+          type: string
+          description: The unique username of the authenticated account holder.
+          example: bank_customer_7
+    LoginRequestDto:
+      type: object
+      description: Request payload used by users and administrators to authenticate
+        and obtain a JWT token.
+      properties:
+        username:
+          type: string
+          description: The unique username of the account holder.
+          example: bank_customer_7
+          minLength: 1
+        password:
+          type: string
+          description: The account password.
+          example: P@ssword2026
+          minLength: 1
+      required:
+        - password
+        - username
+    AdminRegisterDto:
+      type: object
+      description: Request payload for completing the administrator registration using
+        an invitation token.
+      properties:
+        username:
+          type: string
+          description: Unique username for the new administrator account.
+          example: admin_john
+          maxLength: 50
+          minLength: 4
+        password:
+          type: string
+          description: Secure password for the administrator account.
+          example: bAnk$ecure2026
+          maxLength: 100
+          minLength: 8
+        token:
+          type: string
+          format: uuid
+          description: The unique UUID invitation token sent via email.
+          example: 123e4567-e89b-12d3-a456-426614174000
+      required:
+        - password
+        - token
+        - username
+    AdminInviteRequestDto:
+      type: object
+      description: Request payload used by other administrators to create invitation
+        token.
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email where the administrative registration link/token
+            will be sent.
+          example: new_admin@bank.com
+          minLength: 1
+      required:
+        - email
+    AdminInvitationResponseDto:
+      type: object
+      description: Response payload with the details of a generated registration administrator
+        token.
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address to which the invitation token must be sent.
+          example: new_admin@bank.com
+        token:
+          type: string
+          format: uuid
+          description: The unique registration token generated for the new administrator.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        expiryDate:
+          type: string
+          format: date-time
+          description: The exact timestamp when the invitation token will expire.
+          example: '2026-08-14T16:33:00Z'
+    CreateCardRequestDto:
+      type: object
+      description: Request payload used to issue and provision a new bank card for
+        a specific user.
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: The unique identifier of the user for whom the card is being
+            created.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        holderName:
+          type: string
+          description: The full name of the cardholder, typically written in capital
+            Latin letters.
+          example: JOHN DOE
+          minLength: 1
+      required:
+        - holderName
+        - userId
+    CreateCardResponseDto:
+      type: object
+      description: Response payload containing the details of a newly issued bank
+        card.
+      properties:
+        cardNumber:
+          type: string
+          description: The masked credit/debit card number generated by the system.
+          example: 4312 8900 1122 3344
+        holderName:
+          type: string
+          description: The full name of the cardholder in capital Latin letters.
+          example: JOHN DOE
+        expiryDate:
+          type: string
+          format: date-time
+          description: The calculated expiration timestamp for the issued bank card.
+          example: '2031-08-13T16:50:00Z'
+        status:
+          type: string
+          description: The initial operational status assigned to the new card.
+          enum:
+            - ACTIVE
+            - BLOCKED
+            - EXPIRED
+          example: ACTIVE
+        balance:
+          type: number
+          description: The initial financial balance allocated to the card upon creation.
+          example: 0
+    UpdateCardStatusRequestDto:
+      type: object
+      description: Request payload used by administrators to update the operational
+        status of a specific bank card.
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: The unique identifier of the user who owns the card.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        cardStatus:
+          type: string
+          description: The new status to be assigned to the bank card.
+          enum:
+            - ACTIVE
+            - BLOCKED
+            - EXPIRED
+          example: BLOCKED
+      required:
+        - cardStatus
+        - userId
+    DeleteCardRequestDto:
+      type: object
+      description: Request payload used to permanently or logically delete a specific
+        bank card from the system.
+      properties:
+        cardId:
+          type: string
+          format: uuid
+          description: The unique identifier of the bank card that needs to be deleted.
+          example: 987f6543-e21b-78d3-c987-123456789abc
+      required:
+        - cardId

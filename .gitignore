@@ -1,0 +1,35 @@
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/resources/archetype-resources/.idea/
+
+### Сборщик Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.next
+pom.xml.note
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+### Логи и временные файлы ###
+*.log
+logs/
+temp/
+tmp/
+
+### Конфиденциальные данные (настройки среды) ###
+.env
+.env.local
+
+### Ключи и сертификаты безопасности ###
+*.p12
+*.jks
+*.pfx
+*.pem
