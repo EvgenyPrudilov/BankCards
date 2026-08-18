@@ -63,6 +63,7 @@ springdoc:
     - com.example.bankcards.controller
     - com.example.bankcards.dto.auth
     - com.example.bankcards.dto.card
+    - com.example.bankcards.dto.user
   api-docs:
     path: /v3/api-docs
   swagger-ui:
