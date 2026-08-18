@@ -1,4 +1,4 @@
-package com.example.bankcards.controller.docs;
+package com.example.bankcards.controller.docs.admin;
 
 import com.example.bankcards.dto.card.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 @Tag(name = "Admin Cards Management", description = "Administrative operations for bank cards management.")
 @SecurityRequirement(name = "BearerAuth")
-public interface AdminCardControllerDocs {
+public interface CardControllerDocs {
 
     @Operation(
         summary = "Create a new bank card.",

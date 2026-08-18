@@ -83,7 +83,7 @@ public class CardServiceImpl implements CardService {
     public CardEntity createCard(CreateCardRequest request) {
 //        UserEntity userEntity = userRepository.findByUuid(request.getUserId())
 //            .orElseThrow(UserNotFoundException::new);
-        UserEntity userEntity = userRepository.findByUsername(request.getUserName())
+        UserEntity userEntity = userRepository.findByUuid(request.getUserId())
             .orElseThrow(UserNotFoundException::new);
 
         CardEntity cardEntity = CardEntity.builder()
@@ -120,7 +120,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Page<CardEntity> getAllCards(GetCardsAdminRequest request, Pageable pageable) {
-        UserEntity userEntity = userRepository.findByUsername(request.getUserName())
+        UserEntity userEntity = userRepository.findByUuid(request.getUserId())
             .orElseThrow(UserNotFoundException::new);
         if (request.getStatus() == null) {
             return cardRepository.findAllByUserEntity_Uuid(userEntity.getUuid(), pageable);

@@ -1,6 +1,6 @@
-package com.example.bankcards.controller;
+package com.example.bankcards.controller.admin;
 
-import com.example.bankcards.controller.docs.AdminCardControllerDocs;
+import com.example.bankcards.controller.docs.admin.CardControllerDocs;
 import com.example.bankcards.dto.card.*;
 import com.example.bankcards.service.ServicesGate;
 import jakarta.validation.Valid;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/admin/cards")
 @RequiredArgsConstructor
-public class AdminCardController implements AdminCardControllerDocs {
+public class CardManagingController implements CardControllerDocs {
 
     private final ServicesGate servicesGate;
 

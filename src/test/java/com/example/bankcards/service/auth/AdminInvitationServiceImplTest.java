@@ -141,7 +141,7 @@ class AdminInvitationServiceImplTest {
             UserEntity savedAdmin = userCaptor.getValue();
 
             assertNotNull(savedAdmin);
-            assertEquals("newAdmin", savedAdmin.getUsername());
+            assertEquals("newAdmin", savedAdmin.getUserName());
             assertEquals("encodedAdminPass", savedAdmin.getPassword());
             assertEquals("admin@test.com", savedAdmin.getEmail());
             assertEquals(UserRole.ADMIN, savedAdmin.getRole());

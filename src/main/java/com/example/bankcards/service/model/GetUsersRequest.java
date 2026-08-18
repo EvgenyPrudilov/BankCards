@@ -1,14 +1,15 @@
 package com.example.bankcards.service.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshResponse {
-    private String accessToken;
-    private String refreshToken;
+public class GetUsersRequest {
     private String userName;
+    private String holderName;
 }

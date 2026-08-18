@@ -31,7 +31,5 @@ public interface CardRepository extends JpaRepository<CardEntity, Long> {
 
     void deleteByUuid(UUID cardId);
 
-    Page<CardEntity> findAllByUuid(UUID uuid, Pageable pageable);
-
     Page<CardEntity> findAllByUserEntity_Uuid(UUID userUuid, Pageable pageable);
 }

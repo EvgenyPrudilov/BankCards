@@ -72,7 +72,7 @@ class AuthServiceImplTest {
         @DisplayName("Successful registration.")
         void success() {
 
-            when(userRepository.existsByUsername(request.getUsername())).thenReturn(false);
+            when(userRepository.existsByUserName(request.getUserName())).thenReturn(false);
             when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
             when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPass");
 
@@ -85,7 +85,7 @@ class AuthServiceImplTest {
 
 
             assertNotNull(savedUser);
-            assertEquals("user", savedUser.getUsername());
+            assertEquals("user", savedUser.getUserName());
             assertEquals("encodedPass", savedUser.getPassword());
             assertEquals(UserRole.USER, savedUser.getRole());
             assertEquals("email@test.com", savedUser.getEmail());
@@ -95,7 +95,7 @@ class AuthServiceImplTest {
         @Test
         @DisplayName("User already exists.")
         void throwsUserAlreadyExistsException() {
-            when(userRepository.existsByUsername(request.getUsername())).thenReturn(true);
+            when(userRepository.existsByUserName(request.getUserName())).thenReturn(true);
 
             assertThrows(UserAlreadyExistsException.class, () -> authService.registerNewUser(request));
             verify(userRepository, never()).save(any());
@@ -104,7 +104,7 @@ class AuthServiceImplTest {
         @Test
         @DisplayName("Email is already used.")
         void throwsEmailAlreadyUsedException() {
-            when(userRepository.existsByUsername(request.getUsername())).thenReturn(false);
+            when(userRepository.existsByUserName(request.getUserName())).thenReturn(false);
             when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
 
             assertThrows(EmailAlreadyUsedException.class, () -> authService.registerNewUser(request));
@@ -127,7 +127,7 @@ class AuthServiceImplTest {
             activeUser = UserEntity.builder()
                 .id(1L)
                 .uuid(UUID.randomUUID())
-                .username("user")
+                .userName("user")
                 .password("encodedPass")
                 .role(UserRole.USER)
                 .enabled(true)
@@ -138,7 +138,7 @@ class AuthServiceImplTest {
         @DisplayName("Successful login and access token generation.")
         void success() {
 
-            when(userRepository.findByUsername(request.getUsername())).thenReturn(Optional.of(activeUser));
+            when(userRepository.findByUserName(request.getUserName())).thenReturn(Optional.of(activeUser));
             when(passwordEncoder.matches(request.getPassword(), activeUser.getPassword())).thenReturn(true);
             when(jwtUtils.generateAccessToken(activeUser.getUuid(), activeUser.getRole())).thenReturn("access-token");
             when(jwtUtils.generateRefreshToken()).thenReturn("refresh-token");
@@ -153,7 +153,7 @@ class AuthServiceImplTest {
             assertNotNull(response);
             assertEquals("access-token", response.getAccessToken());
             assertEquals("refresh-token", response.getRefreshToken());
-            assertEquals("user", response.getUsername());
+            assertEquals("user", response.getUserName());
 
 
             verify(refreshTokenRepository, times(1)).deleteByUserEntity_Id(activeUser.getId());
@@ -174,7 +174,7 @@ class AuthServiceImplTest {
         @Test
         @DisplayName("User is not found.")
         void throwsBadCredentialsWhenUserNotFound() {
-            when(userRepository.findByUsername(request.getUsername())).thenReturn(Optional.empty());
+            when(userRepository.findByUserName(request.getUserName())).thenReturn(Optional.empty());
 
             assertThrows(BadCredentialsException.class, () -> authService.login(request));
         }
@@ -184,7 +184,7 @@ class AuthServiceImplTest {
         void throwsUserIsNotEnabledException() {
             UserEntity disabledUser = mock(UserEntity.class);
             when(disabledUser.isNotEnabled()).thenReturn(true);
-            when(userRepository.findByUsername(request.getUsername())).thenReturn(Optional.of(disabledUser));
+            when(userRepository.findByUserName(request.getUserName())).thenReturn(Optional.of(disabledUser));
 
             assertThrows(UserIsNotEnabledException.class, () -> authService.login(request));
         }
@@ -192,7 +192,7 @@ class AuthServiceImplTest {
         @Test
         @DisplayName("Wrong password.")
         void throwsBadCredentialsWhenPasswordWrong() {
-            when(userRepository.findByUsername(request.getUsername())).thenReturn(Optional.of(activeUser));
+            when(userRepository.findByUserName(request.getUserName())).thenReturn(Optional.of(activeUser));
             when(passwordEncoder.matches(request.getPassword(), activeUser.getPassword())).thenReturn(false);
 
             assertThrows(BadCredentialsException.class, () -> authService.login(request));
@@ -206,8 +206,8 @@ class AuthServiceImplTest {
         @Test
         @DisplayName("Successful logout and token cleaning.")
         void success() {
-            UserEntity user = UserEntity.builder().id(5L).username("user").build();
-            when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+            UserEntity user = UserEntity.builder().id(5L).userName("user").build();
+            when(userRepository.findByUserName("user")).thenReturn(Optional.of(user));
 
             authService.logout("user");
 
@@ -217,7 +217,7 @@ class AuthServiceImplTest {
         @Test
         @DisplayName("User is not found.")
         void userNotFoundDoesNothing() {
-            when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
+            when(userRepository.findByUserName("unknown")).thenReturn(Optional.empty());
 
             authService.logout("unknown");
 
@@ -231,7 +231,7 @@ class AuthServiceImplTest {
         @Test
         @DisplayName("Successful updating of a pair of tokens.")
         void success() {
-            UserEntity user = UserEntity.builder().id(1L).uuid(UUID.randomUUID()).username("user").role(UserRole.USER).build();
+            UserEntity user = UserEntity.builder().id(1L).uuid(UUID.randomUUID()).userName("user").role(UserRole.USER).build();
             RefreshTokenEntity oldToken = mock(RefreshTokenEntity.class);
 
             when(oldToken.isExpired()).thenReturn(false);

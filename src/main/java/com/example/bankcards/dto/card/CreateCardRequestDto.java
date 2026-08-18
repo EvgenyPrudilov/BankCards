@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @Schema(
@@ -20,7 +21,7 @@ public class CreateCardRequestDto {
         format = "uuid",
         requiredMode = Schema.RequiredMode.REQUIRED
     )
-    private String userName;
+    private UUID userId;
 
     @NotBlank(message = "Cardholder name cannot be empty.")
     @Schema(

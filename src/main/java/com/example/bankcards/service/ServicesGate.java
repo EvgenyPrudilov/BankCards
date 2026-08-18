@@ -4,9 +4,12 @@ import com.example.bankcards.dto.auth.*;
 import com.example.bankcards.dto.card.*;
 import com.example.bankcards.dto.mapper.CardMapper;
 import com.example.bankcards.dto.mapper.UserMapper;
+import com.example.bankcards.dto.user.GetUsersRequestDto;
+import com.example.bankcards.dto.user.GetUsersResponseDto;
 import com.example.bankcards.service.auth.AdminInvitationService;
 import com.example.bankcards.service.auth.AuthService;
 import com.example.bankcards.service.card.CardService;
+import com.example.bankcards.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ public class ServicesGate {
     private final AuthService authService;
     private final AdminInvitationService adminInvitationService;
     private final CardService cardService;
+    private final UserService userService;
     private final UserMapper userMapper;
     private final CardMapper cardMapper;
 
@@ -90,4 +94,9 @@ public class ServicesGate {
     }
 
 
+    public GetUsersResponseDto searchUsers(GetUsersRequestDto requestDto, Pageable pageable) {
+        return userMapper.toDto(
+            userService.searchUsers(userMapper.toDomain(requestDto), pageable)
+        );
+    }
 }

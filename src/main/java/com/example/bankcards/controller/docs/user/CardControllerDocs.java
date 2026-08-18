@@ -1,4 +1,4 @@
-package com.example.bankcards.controller.docs;
+package com.example.bankcards.controller.docs.user;
 
 import com.example.bankcards.dto.card.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Tag(name = "User Cards Management", description = "Operations related to user bank cards management.")
 @SecurityRequirement(name = "BearerAuth")
-public interface UserCardControllerDocs {
+public interface CardControllerDocs {
 
     @Operation(
         summary = "Get user cards list. (YES, it's POST)",

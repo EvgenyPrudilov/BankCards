@@ -3,19 +3,13 @@ package com.example.bankcards.dto.mapper;
 import com.example.bankcards.dto.card.*;
 import com.example.bankcards.entity.CardEntity;
 import com.example.bankcards.service.model.*;
-import com.example.bankcards.util.MaskingUtils;
 import org.mapstruct.Mapper;
-import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface CardMapper {
-    @Named("maskCardNumber")
-    default String maskCardNumber(String cardNumber) {
-        return MaskingUtils.maskCardNumber(cardNumber);
-    }
 
     CreateCardResponseDto toDto(CardEntity card);
 

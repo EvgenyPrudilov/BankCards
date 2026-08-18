@@ -1,6 +1,6 @@
-package com.example.bankcards.controller;
+package com.example.bankcards.controller.user;
 
-import com.example.bankcards.controller.docs.UserCardControllerDocs;
+import com.example.bankcards.controller.docs.user.CardControllerDocs;
 import com.example.bankcards.dto.card.*;
 import com.example.bankcards.service.ServicesGate;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/user/cards")
 @RequiredArgsConstructor
-public class UserCardController implements UserCardControllerDocs {
+public class CardController implements CardControllerDocs {
 
     private final ServicesGate servicesGate;
 

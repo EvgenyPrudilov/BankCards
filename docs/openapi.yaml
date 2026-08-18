@@ -9,6 +9,8 @@ servers:
 tags:
   - name: Private Authentication Management
     description: Authorized security and administrative invitation operations.
+  - name: Admin Users Management
+    description: Administrative operations for system users management.
   - name: Admin Cards Management
     description: Administrative operations for bank cards management.
   - name: Public Authentication Management (no token needed)
@@ -299,6 +301,46 @@ paths:
           description: User does not have the required administrative permissions.
       security:
         - BearerAuth: []
+  "/api/v1/admin/users/search":
+    post:
+      tags:
+        - Admin Users Management
+      summary: Search users with pagination. (YES, it's POST)
+      description: Returns a paginated list of users matching the search criteria
+        (exact match for username, partial match for card holder name). Requires **ROLE_ADMIN**
+        authority.
+      operationId: searchUsers
+      parameters:
+        - name: pageable
+          in: query
+          description: Pagination parameters including page, size, and sort.
+          required: true
+          schema:
+            type: object
+          example:
+            page: 0
+            size: 10
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/GetUsersRequestDto"
+        required: true
+      responses:
+        '200':
+          description: User list successfully retrieved.
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/GetUsersResponseDto"
+        '400':
+          description: Invalid search or pagination parameters provided.
+        '401':
+          description: User is not authenticated.
+        '403':
+          description: User does not have the required administrative permissions.
+      security:
+        - BearerAuth: []
   "/api/v1/admin/cards":
     post:
       tags:
@@ -376,7 +418,7 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/GetCardsRequestDto"
+              "$ref": "#/components/schemas/GetCardsAdminRequestDto"
         required: true
       responses:
         '200':
@@ -428,7 +470,9 @@ components:
         to a specific user.
       properties:
         userId:
-          type: string
+          type:
+            - string
+            - 'null'
           format: uuid
           description: The unique identifier of the user whose cards are being requested.
           example: 123e4567-e89b-12d3-a456-426614174000
@@ -443,19 +487,81 @@ components:
             - BLOCKED
             - EXPIRED
           example: ACTIVE
-      required:
-        - userId
+    GetCardResponseDto:
+      type: object
+      description: Response payload containing complete information and current operational
+        state of a bank card.
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: The unique business identifier (UUID) assigned to the bank
+            card.
+          example: e4219747-f42d-4e32-92a8-e67d9841910e
+        cardNumber:
+          type: string
+          description: The masked or encrypted credit card number format for secure
+            visualization.
+          example: 4444 44** **** 4444
+        holderName:
+          type: string
+          description: The full name of the card owner as printed on the physical
+            card.
+          example: JOHN DOE
+        expiryDate:
+          type: string
+          format: date-time
+          description: The exact expiration date and time of the card in UTC ISO-8601
+            format.
+          example: '2029-12-31T23:59:59Z'
+        status:
+          type: string
+          description: The current lifecycle and operational status of the bank card.
+          enum:
+            - ACTIVE
+            - BLOCKED
+            - EXPIRED
+          example: ACTIVE
+        balance:
+          type: number
+          description: The current available financial balance amount remaining on
+            the card.
+          example: 15450.5
     GetCardsResponseDto:
       type: object
-      description: Response payload containing the collection of retrieved bank cards
-        for the user.
+      description: Response payload containing the paginated collection of retrieved
+        bank cards along with execution metadata.
       properties:
         cards:
           type: array
-          description: The list of bank cards matching the requested criteria or belonging
-            to the specified user.
+          description: The list of bank card details matching the requested filter
+            criteria or belonging to the target user.
           items:
-            "$ref": "#/components/schemas/GetCardsRequestDto"
+            "$ref": "#/components/schemas/GetCardResponseDto"
+        pageNumber:
+          type: integer
+          format: int32
+          description: The current page index position within the paginated record
+            set, starting from index 0.
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          description: The maximum number of card records requested or allowed to
+            be displayed on a single page slice.
+          example: 10
+        totalElements:
+          type: integer
+          format: int64
+          description: The absolute total count of all bank card records existing
+            in the database that match the criteria.
+          example: 47
+        totalPages:
+          type: integer
+          format: int32
+          description: The calculated total count of available pages based on total
+            elements and the requested page size.
+          example: 5
     TransferRequestDto:
       type: object
       description: Request payload used to execute a financial transfer between two
@@ -543,7 +649,7 @@ components:
       description: Request payload used by new consumers to sign up and create a bank
         user account.
       properties:
-        username:
+        userName:
           type: string
           description: Unique username chosen by the user for account identification.
           example: bank_customer_7
@@ -564,7 +670,7 @@ components:
       required:
         - email
         - password
-        - username
+        - userName
     TokenResponseDto:
       type: object
       description: Response payload containing the generated authentication access
@@ -575,7 +681,7 @@ components:
           description: The JWT access token used to authenticate subsequent protected
             resource requests.
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        username:
+        userName:
           type: string
           description: The unique username of the authenticated account holder.
           example: bank_customer_7
@@ -584,7 +690,7 @@ components:
       description: Request payload used by users and administrators to authenticate
         and obtain a JWT token.
       properties:
-        username:
+        userName:
           type: string
           description: The unique username of the account holder.
           example: bank_customer_7
@@ -596,13 +702,13 @@ components:
           minLength: 1
       required:
         - password
-        - username
+        - userName
     AdminRegisterDto:
       type: object
       description: Request payload for completing the administrator registration using
         an invitation token.
       properties:
-        username:
+        userName:
           type: string
           description: Unique username for the new administrator account.
           example: admin_john
@@ -622,7 +728,7 @@ components:
       required:
         - password
         - token
-        - username
+        - userName
     AdminInviteRequestDto:
       type: object
       description: Request payload used by other administrators to create invitation
@@ -657,6 +763,90 @@ components:
           format: date-time
           description: The exact timestamp when the invitation token will expire.
           example: '2026-08-14T16:33:00Z'
+    GetUsersRequestDto:
+      type: object
+      description: Request payload used to search system users based on filtering
+        criteria.
+      properties:
+        userName:
+          type:
+            - string
+            - 'null'
+          description: The exact authentication handle or login name of the target
+            user. This field is optional.
+          example: super_admin
+        holderName:
+          type:
+            - string
+            - 'null'
+          description: The name of the cardholder linked to the bank cards. Supports
+            partial or substring matches. This field is optional.
+          example: JOHN DOE
+    GetUserResponseDto:
+      type: object
+      description: Response payload containing the details of a specific user account.
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: The unique business identifier (UUID) assigned to the user
+            account.
+          example: e4219747-f42d-4e32-92a8-e67d9841910e
+        userName:
+          type: string
+          description: The unique authentication handle and login name of the user.
+          example: super_admin
+        email:
+          type: string
+          description: The electronic mail address linked directly to the user profile.
+          example: root@bank.com
+        enabled:
+          type: boolean
+          description: The operational state indicating whether the user account is
+            active or disabled.
+          example: true
+        role:
+          type: string
+          description: The administrative authority level and security role assigned
+            to the user.
+          enum:
+            - USER
+            - ADMIN
+          example: ADMIN
+    GetUsersResponseDto:
+      type: object
+      description: Response payload containing the paginated collection of system
+        users.
+      properties:
+        users:
+          type: array
+          description: The list of users matching the specified search filtering criteria.
+          items:
+            "$ref": "#/components/schemas/GetUserResponseDto"
+        pageNumber:
+          type: integer
+          format: int32
+          description: The current page index position within the record set, starting
+            from 0.
+          example: 0
+        pageSize:
+          type: integer
+          format: int32
+          description: The maximum number of user records displayed on a single page
+            slice.
+          example: 10
+        totalElements:
+          type: integer
+          format: int64
+          description: The absolute total count of user records matching the filter
+            criteria in the database.
+          example: 25
+        totalPages:
+          type: integer
+          format: int32
+          description: The calculated total count of available pages based on the
+            current page size.
+          example: 3
     CreateCardRequestDto:
       type: object
       description: Request payload used to issue and provision a new bank card for
@@ -674,6 +864,8 @@ components:
             Latin letters.
           example: JOHN DOE
           minLength: 1
+        initBalance:
+          type: number
       required:
         - holderName
         - userId
@@ -686,6 +878,11 @@ components:
           type: string
           description: The masked credit/debit card number generated by the system.
           example: 4312 8900 1122 3344
+        uuid:
+          type: string
+          format: uuid
+          description: The unique identifier of the card.
+          example: 123e4567-e89b-12d3-a456-426614174000
         holderName:
           type: string
           description: The full name of the cardholder in capital Latin letters.
@@ -707,15 +904,39 @@ components:
           type: number
           description: The initial financial balance allocated to the card upon creation.
           example: 0
+    GetCardsAdminRequestDto:
+      type: object
+      description: Request payload used to fetch and filter a list of bank cards belonging
+        to a specific user.
+      properties:
+        userId:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: The unique identifier of the user who owns the card. This field
+            is optional.
+          example: 123e4567-e89b-12d3-a456-426614174000
+        status:
+          type:
+            - string
+            - 'null'
+          description: Optional card status filter. If omitted or null, all cards
+            for the user will be returned.
+          enum:
+            - ACTIVE
+            - BLOCKED
+            - EXPIRED
+          example: ACTIVE
     UpdateCardStatusRequestDto:
       type: object
       description: Request payload used by administrators to update the operational
         status of a specific bank card.
       properties:
-        userId:
+        cardId:
           type: string
           format: uuid
-          description: The unique identifier of the user who owns the card.
+          description: The unique identifier of the card.
           example: 123e4567-e89b-12d3-a456-426614174000
         cardStatus:
           type: string
@@ -726,8 +947,8 @@ components:
             - EXPIRED
           example: BLOCKED
       required:
+        - cardId
         - cardStatus
-        - userId
     DeleteCardRequestDto:
       type: object
       description: Request payload used to permanently or logically delete a specific

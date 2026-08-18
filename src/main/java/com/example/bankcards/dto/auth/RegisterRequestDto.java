@@ -21,7 +21,7 @@ public class RegisterRequestDto {
         maxLength = 50,
         requiredMode = Schema.RequiredMode.REQUIRED
     )
-    private String username;
+    private String userName;
 
     @NotBlank(message = "Password cannot be empty.")
     @Size(min = 6, max = 100, message = "Password must be at least 6 characters long.")

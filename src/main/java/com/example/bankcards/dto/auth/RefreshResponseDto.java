@@ -29,5 +29,5 @@ public class RefreshResponseDto {
         description = "The unique username of the account owner.",
         example = "bank_customer_7"
     )
-    private String username;
+    private String userName;
 }

@@ -17,7 +17,7 @@ public class LoginRequestDto {
         minLength = 1,
         requiredMode = Schema.RequiredMode.REQUIRED
     )
-    private String username;
+    private String userName;
 
     @NotBlank(message = "Password is required.")
     @Schema(

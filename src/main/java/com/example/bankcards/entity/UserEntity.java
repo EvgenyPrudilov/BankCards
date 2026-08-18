@@ -27,7 +27,7 @@ public class UserEntity {
     private UUID uuid = UUID.randomUUID();
 
     @Column(nullable = false, unique = true, length = 50)
-    private String username;
+    private String userName;
 
     @Column(nullable = false, length = 100)
     private String password;

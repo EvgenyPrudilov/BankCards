@@ -8,7 +8,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class AdminRegister {
-    private String username;
+    private String userName;
     private String password;
     private UUID token;
 }

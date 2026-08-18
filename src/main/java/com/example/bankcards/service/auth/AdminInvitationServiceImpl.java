@@ -62,7 +62,7 @@ public class AdminInvitationServiceImpl implements AdminInvitationService {
         }
 
         UserEntity admin = UserEntity.builder()
-            .username(adminRegister.getUsername())
+            .userName(adminRegister.getUserName())
             .password(passwordEncoder.encode(adminRegister.getPassword()))
             .email(invitation.getEmail())
             .enabled(true)

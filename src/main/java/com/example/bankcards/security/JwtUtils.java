@@ -46,7 +46,7 @@ public class JwtUtils {
             this.privateKey = (PrivateKey) keyStore.getKey(keyAlias, storePassword.toCharArray());
             this.publicKey = keyStore.getCertificate(keyAlias).getPublicKey();
         } catch (Exception e) {
-            throw new RuntimeException("Ошибка загрузки KeyStore", e);
+            throw new RuntimeException("An error while loading KeyStore", e);
         }
     }
 

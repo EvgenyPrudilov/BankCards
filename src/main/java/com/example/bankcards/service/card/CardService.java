@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CardService {
-
     void requestCardBlock(BlockCardRequest request);
 
     void transferFunds(TransferRequest request);
@@ -22,5 +21,4 @@ public interface CardService {
     Page<CardEntity> getAllCards(GetCardsRequest request, Pageable pageable);
 
     Page<CardEntity> getAllCards(GetCardsAdminRequest request, Pageable pageable);
-
 }

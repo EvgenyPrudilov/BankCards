@@ -1,6 +1,6 @@
-package com.example.bankcards.controller;
+package com.example.bankcards.controller.auth;
 
-import com.example.bankcards.controller.docs.PrivateControllerDocs;
+import com.example.bankcards.controller.docs.auth.PrivateControllerDocs;
 import com.example.bankcards.dto.auth.AdminInvitationResponseDto;
 import com.example.bankcards.dto.auth.AdminInviteRequestDto;
 import com.example.bankcards.service.ServicesGate;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/private/auth")
-public class AuthPrivateController implements PrivateControllerDocs {
+public class PrivateController implements PrivateControllerDocs {
     private final ServicesGate servicesGate;
 
     @Value("${app.refresh-token.path}")

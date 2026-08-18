@@ -23,5 +23,5 @@ public class TokenResponseDto {
         description = "The unique username of the authenticated account holder.",
         example = "bank_customer_7"
     )
-    private String username;
+    private String userName;
 }

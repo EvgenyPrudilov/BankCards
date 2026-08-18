@@ -14,12 +14,12 @@ import java.util.UUID;
 )
 public class TransferRequestDto {
 
-    //    @NotNull(message = "User ID is required.")
+    @NotNull(message = "User ID is required.")
     @Schema(
         description = "The unique identifier of the user executing the transaction.",
         example = "123e4567-e89b-12d3-a456-426614174000",
-        format = "uuid"
-//        requiredMode = Schema.RequiredMode.REQUIRED
+        format = "uuid",
+        requiredMode = Schema.RequiredMode.REQUIRED
     )
     private UUID userId;
 

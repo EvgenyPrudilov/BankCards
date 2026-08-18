@@ -21,7 +21,7 @@ databaseChangeLog:
                     nullable: false
                     unique: true
               - column:
-                  name: username
+                  name: user_name
                   type: varchar(50)
                   constraints:
                     nullable: false

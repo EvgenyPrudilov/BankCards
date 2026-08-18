@@ -1,6 +1,6 @@
-package com.example.bankcards.controller;
+package com.example.bankcards.controller.auth;
 
-import com.example.bankcards.controller.docs.PublicControllerDocs;
+import com.example.bankcards.controller.docs.auth.PublicControllerDocs;
 import com.example.bankcards.dto.auth.*;
 import com.example.bankcards.service.ServicesGate;
 import jakarta.validation.Valid;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/public/auth")
-public class AuthPublicController implements PublicControllerDocs {
+public class PublicController implements PublicControllerDocs {
     private final ServicesGate servicesGate;
 
     @Value("${app.refresh-token.path}")
@@ -43,7 +43,7 @@ public class AuthPublicController implements PublicControllerDocs {
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
             .body(new TokenResponseDto(
                 loginResponseDto.getAccessToken(),
-                loginResponseDto.getUsername())
+                loginResponseDto.getUserName())
             );
     }
 
@@ -58,7 +58,7 @@ public class AuthPublicController implements PublicControllerDocs {
             .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
             .body(new TokenResponseDto(
                 refreshResponseDto.getAccessToken(),
-                refreshResponseDto.getUsername())
+                refreshResponseDto.getUserName())
             );
     }
 

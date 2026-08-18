@@ -35,10 +35,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     public void registerNewUser(RegisterRequest request) {
-        String userName = request.getUsername();
+        String userName = request.getUserName();
         String email = request.getEmail();
 
-        if (userRepository.existsByUsername(userName)) {
+        if (userRepository.existsByUserName(userName)) {
             throw new UserAlreadyExistsException();
         }
         if (userRepository.existsByEmail(email)) {
@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         UserEntity userEntity = UserEntity.builder()
-            .username(request.getUsername())
+            .userName(request.getUserName())
             .password(passwordEncoder.encode(request.getPassword()))
             .role(UserRole.USER)
             .enabled(true)
@@ -57,9 +57,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     public LoginResponse login(LoginRequest request) {
-        String userName = request.getUsername();
+        String userName = request.getUserName();
 
-        UserEntity userEntity = userRepository.findByUsername(userName)
+        UserEntity userEntity = userRepository.findByUserName(userName)
             .orElseThrow(BadCredentialsException::new);
 
         if (userEntity.isNotEnabled()) {
@@ -82,19 +82,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     public void logout(String userName) {
-        userRepository.findByUsername(userName).ifPresentOrElse(
-            user -> {
-                // 2. Логируем, что пользователь найден и его ID
-                log.info("Пользователь найден. ID: {}. Удаляем токен...", user.getId());
-
-                refreshTokenRepository.deleteByUserEntity_Id(user.getId());
-
-                log.info("Токен для пользователя ID {} успешно удален", user.getId());
-            },
-            () -> {
-                // 3. Логируем, если пользователь НЕ найден
-                log.info("Пользователь с именем {} не найден в базе данных", userName);
-            }
+        userRepository.findByUserName(userName).ifPresent(user ->
+            refreshTokenRepository.deleteByUserEntity_Id(user.getId())
         );
     }
 
@@ -129,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
         RefreshResponse refreshResponse = new RefreshResponse(
             jwtUtils.generateAccessToken(userEntity.getUuid(), userEntity.getRole()),
             generateRefreshToken(userEntity),
-            userEntity.getUsername()
+            userEntity.getUserName()
         );
 
         return refreshResponse;

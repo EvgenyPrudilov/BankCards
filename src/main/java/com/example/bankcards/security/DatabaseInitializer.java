@@ -18,7 +18,7 @@ public class DatabaseInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.admin.main.name}")
-    private String adminUsername;
+    private String adminUserName;
     @Value("${app.admin.main.password}")
     private String adminPassword;
     @Value("${app.admin.main.email}")
@@ -31,7 +31,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         if (!adminExists) {
             UserEntity rootAdmin = UserEntity.builder()
                 .uuid(UUID.randomUUID())
-                .username(adminUsername)
+                .userName(adminUserName)
                 .password(passwordEncoder.encode(adminPassword))
                 .email(adminEmail)
                 .enabled(true)

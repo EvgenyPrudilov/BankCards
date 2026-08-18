@@ -1,4 +1,4 @@
-package com.example.bankcards.controller.docs;
+package com.example.bankcards.controller.docs.auth;
 
 import com.example.bankcards.dto.auth.AdminInvitationResponseDto;
 import com.example.bankcards.dto.auth.AdminInviteRequestDto;

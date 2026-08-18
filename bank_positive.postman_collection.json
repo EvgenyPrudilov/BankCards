@@ -27,7 +27,7 @@
               "    const jwtRegex = /^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)$/;\r",
               "    pm.expect(jsonData.accessToken).to.match(jwtRegex);\r",
               "    \r",
-              "    pm.expect(jsonData).to.have.property('username', pm.collectionVariables.get(\"main_admin_username\"));\r",
+              "    pm.expect(jsonData).to.have.property('userName', pm.collectionVariables.get(\"main_admin_username\"));\r",
               "});\r",
               "\r",
               "pm.test(\"В ответе присутствует установленная кука авторизации\", function () {\r",
@@ -76,7 +76,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"username\": \"{{main_admin_username}}\",\r\n    \"password\": \"{{main_admin_password}}\"\r\n}",
+          "raw": "{\r\n    \"userName\": \"{{main_admin_username}}\",\r\n    \"password\": \"{{main_admin_password}}\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -108,7 +108,7 @@
               "    pm.response.to.have.status(200);\r",
               "});\r",
               "\r",
-              "pm.test(\"Ответ содержит accessToken и username\", function () {\r",
+              "pm.test(\"Ответ содержит accessToken и userName\", function () {\r",
               "    const jsonData = pm.response.json();\r",
               "    \r",
               "    pm.expect(jsonData).to.have.property('accessToken');\r",
@@ -116,7 +116,7 @@
               "    const jwtRegex = /^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)$/;\r",
               "    pm.expect(jsonData.accessToken).to.match(jwtRegex);\r",
               "    \r",
-              "    pm.expect(jsonData).to.have.property('username', pm.collectionVariables.get('main_admin_username'));\r",
+              "    pm.expect(jsonData).to.have.property('userName', pm.collectionVariables.get('main_admin_username'));\r",
               "});\r",
               "\r",
               "pm.test(\"В ответе присутствует установленная кука авторизации\", function () {\r",
@@ -284,7 +284,7 @@
               "    const jwtRegex = /^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)$/;\r",
               "    pm.expect(jsonData.accessToken).to.match(jwtRegex);\r",
               "    \r",
-              "    pm.expect(jsonData).to.have.property('username', pm.collectionVariables.get('main_admin_username'));\r",
+              "    pm.expect(jsonData).to.have.property('userName', pm.collectionVariables.get('main_admin_username'));\r",
               "});\r",
               "\r",
               "pm.test(\"В ответе присутствует установленная кука авторизации\", function () {\r",
@@ -332,7 +332,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"username\": \"{{main_admin_username}}\",\r\n    \"password\": \"{{main_admin_password}}\"\r\n}",
+          "raw": "{\r\n    \"userName\": \"{{main_admin_username}}\",\r\n    \"password\": \"{{main_admin_password}}\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -466,7 +466,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"username\": \"{{new_admin_username}}\",\r\n  \"password\": \"{{new_admin_password}}\",\r\n  \"token\": \"{{invitationToken}}\"\r\n}",
+          "raw": "{\r\n  \"userName\": \"{{new_admin_username}}\",\r\n  \"password\": \"{{new_admin_password}}\",\r\n  \"token\": \"{{invitationToken}}\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -507,7 +507,7 @@
               "    const jwtRegex = /^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)$/;\r",
               "    pm.expect(jsonData.accessToken).to.match(jwtRegex);\r",
               "    \r",
-              "    pm.expect(jsonData).to.have.property('username', pm.collectionVariables.get('new_admin_username'));\r",
+              "    pm.expect(jsonData).to.have.property('userName', pm.collectionVariables.get('new_admin_username'));\r",
               "});\r",
               "\r",
               "pm.test(\"В ответе присутствует установленная кука авторизации\", function () {\r",
@@ -555,7 +555,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"username\": \"{{new_admin_username}}\",\r\n    \"password\": \"{{new_admin_password}}\"\r\n}",
+          "raw": "{\r\n    \"userName\": \"{{new_admin_username}}\",\r\n    \"password\": \"{{new_admin_password}}\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -621,7 +621,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"username\": \"{{new_user_username}}\",\r\n  \"email\": \"{{new_user_email}}\",\r\n  \"password\": \"{{new_user_password}}\"\r\n}",
+          "raw": "{\r\n  \"userName\": \"{{new_user_username}}\",\r\n  \"email\": \"{{new_user_email}}\",\r\n  \"password\": \"{{new_user_password}}\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -661,7 +661,7 @@
               "    const jwtRegex = /^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)$/;\r",
               "    pm.expect(jsonData.accessToken).to.match(jwtRegex);\r",
               "    \r",
-              "    pm.expect(jsonData).to.have.property('username', pm.collectionVariables.get('new_user_username'));\r",
+              "    pm.expect(jsonData).to.have.property('userName', pm.collectionVariables.get('new_user_username'));\r",
               "});\r",
               "\r",
               "pm.test(\"В ответе присутствует установленная кука авторизации\", function () {\r",
@@ -709,7 +709,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"username\": \"{{new_user_username}}\",\r\n    \"password\": \"{{new_user_password}}\"\r\n}",
+          "raw": "{\r\n    \"userName\": \"{{new_user_username}}\",\r\n    \"password\": \"{{new_user_password}}\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -812,6 +812,113 @@
       "response": []
     },
     {
+      "name": "Get data of new user",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set(\"holderName\", \"JOHN DOE\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Проверяем, что сервер вернул успешный статус 200 OK\r",
+              "pm.test(\"Статус ответа должен быть 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Проверяем структуру JSON ответа\r",
+              "pm.test(\"Ответ содержит корректные метаданные пагинации и структуру\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    \r",
+              "    // Проверка корневых полей пагинации\r",
+              "    pm.expect(jsonData).to.have.property('users').that.is.an('array');\r",
+              "    pm.expect(jsonData).to.have.property('pageNumber').that.is.a('number');\r",
+              "    pm.expect(jsonData).to.have.property('pageSize').that.is.a('number');\r",
+              "    pm.expect(jsonData).to.have.property('totalElements').that.is.a('number');\r",
+              "    pm.expect(jsonData).to.have.property('totalPages').that.is.a('number');\r",
+              "});\r",
+              "\r",
+              "// 3. Проверяем структуру объектов внутри массива пользователей (если они нашлись)\r",
+              "pm.test(\"Каждый пользователь в списке имеет правильный набор полей\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    \r",
+              "    if (jsonData.users.length > 0) {\r",
+              "        jsonData.users.forEach(function(user) {\r",
+              "            pm.expect(user).to.have.property('uuid').that.is.a('string');\r",
+              "            pm.expect(user).to.have.property('userName').that.is.a('string');\r",
+              "            pm.expect(user).to.have.property('email').that.is.a('string');\r",
+              "            pm.expect(user).to.have.property('enabled').that.is.a('boolean');\r",
+              "            pm.expect(user).to.have.property('role').that.is.a('string');\r",
+              "            \r",
+              "            // Проверка формата UUID (опционально)\r",
+              "            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;\r",
+              "            pm.expect(user.uuid).to.match(uuidRegex);\r",
+              "        });\r",
+              "    } else {\r",
+              "        console.log(\"Список пользователей пуст для данного поискового запроса\");\r",
+              "    }\r",
+              "});\r",
+              "\r",
+              "// // 4. Проверка соответствия размера страницы (необязательно, если дефолт 10)\r",
+              "// pm.test(\"Размер страницы в ответе соответствует запрошенному или дефолтному\", function () {\r",
+              "//     const jsonData = pm.response.json();\r",
+              "//     pm.expect(jsonData.pageSize).to.be.at.least(1);\r",
+              "//     // pm.collectionVariables.set(\"new_user_uuid\", jsonData.users[0].uuid);\r",
+              "// });\r",
+              "\r",
+              "pm.collectionVariables.set(\"new_user_uuid\", pm.response.json().users[0].uuid);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{main_admin_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userName\": \"{{new_user_username}}\",\r\n  \"holderName\": null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}:{{port}}/{{adminUsersPath}}/search",
+          "host": [
+            "{{domain}}"
+          ],
+          "port": "{{port}}",
+          "path": [
+            "{{adminUsersPath}}",
+            "search"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "Create card 1 for new user",
       "event": [
         {
@@ -904,7 +1011,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"userName\": \"{{new_user_username}}\",\r\n  \"holderName\": \"{{holderName}}\"\r\n}",
+          "raw": "{\r\n  \"userId\": \"{{new_user_uuid}}\",\r\n  \"holderName\": \"{{holderName}}\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1017,7 +1124,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"userName\": \"{{new_user_username}}\",\r\n  \"holderName\": \"{{holderName}}\",\r\n  \"initBalance\": 1000\r\n}",
+          "raw": "{\r\n  \"userId\": \"{{new_user_uuid}}\",\r\n  \"holderName\": \"{{holderName}}\",\r\n  \"initBalance\": 1000\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1193,7 +1300,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"fromCardId\": \"{{card_2_uuid}}\",\r\n  \"toCardId\": \"{{card_1_uuid}}\",\r\n  \"amount\": 250\r\n}",
+          "raw": "{\r\n  \"userId\": \"{{new_user_uuid}}\",\r\n  \"fromCardId\": \"{{card_2_uuid}}\",\r\n  \"toCardId\": \"{{card_1_uuid}}\",\r\n  \"amount\": 250\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1696,7 +1803,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"userName\": \"{{new_user_username}}\",\r\n  \"status\": \"EXPIRED\"\r\n}\r\n",
+          "raw": "{\r\n  \"userId\": \"{{new_user_uuid}}\",\r\n  \"status\": \"EXPIRED\"\r\n}\r\n",
           "options": {
             "raw": {
               "language": "json"
@@ -1939,6 +2046,82 @@
     {
       "key": "adminPath",
       "value": "api/v1/admin/cards"
+    },
+    {
+      "key": "adminUsersPath",
+      "value": "api/v1/admin/users"
+    },
+    {
+      "key": "main_admin_username",
+      "value": ""
+    },
+    {
+      "key": "main_admin_password",
+      "value": ""
+    },
+    {
+      "key": "main_admin_refresh_token",
+      "value": ""
+    },
+    {
+      "key": "main_admin_access_token",
+      "value": ""
+    },
+    {
+      "key": "invitationToken",
+      "value": ""
+    },
+    {
+      "key": "new_admin_username",
+      "value": ""
+    },
+    {
+      "key": "new_admin_password",
+      "value": ""
+    },
+    {
+      "key": "new_admin_saved_refresh_token",
+      "value": ""
+    },
+    {
+      "key": "new_admin_access_token",
+      "value": ""
+    },
+    {
+      "key": "new_user_username",
+      "value": ""
+    },
+    {
+      "key": "new_user_email",
+      "value": ""
+    },
+    {
+      "key": "new_user_password",
+      "value": ""
+    },
+    {
+      "key": "new_user_saved_refresh_token",
+      "value": ""
+    },
+    {
+      "key": "new_user_access_token",
+      "value": ""
+    },
+    {
+      "key": "holderName",
+      "value": ""
+    },
+    {
+      "key": "new_user_uuid",
+      "value": ""
+    },
+    {
+      "key": "card_1_uuid",
+      "value": ""
+    },
+    {
+      "key": "card_2_uuid",
+      "value": ""
     }
   ]
 }

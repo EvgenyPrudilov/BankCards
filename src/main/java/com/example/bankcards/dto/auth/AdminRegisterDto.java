@@ -27,7 +27,7 @@ public class AdminRegisterDto {
         maxLength = 50,
         requiredMode = Schema.RequiredMode.REQUIRED
     )
-    private String username;
+    private String userName;
 
     @NotBlank(message = "Password cannot be empty.")
     @Size(min = 8, max = 100, message = "Password must be at least 8 characters long.")
