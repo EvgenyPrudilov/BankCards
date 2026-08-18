@@ -24,7 +24,7 @@
 - Маскирование номеров карт
 
 ## Атрибуты карты
-- Номер карты (зашифрован, отображается маской: `**** **** **** 1234`)
+- Номер карты
 - Владелец
 - Срок действия
 - Статус: Активна, Заблокирована, Истек срок
@@ -38,19 +38,29 @@
 
 ## Быстрый запуск (Docker Compose)
 
+## Комментарии
+
+### Тестирование в Postman
+Я сделал тесты ( bank_positive.postman_collection.json ) для позитивного прохождения последовательного опроса всех контроллеров - они обязательно должны идти последовательно, ибо зависят друго от друга. Желательно перед run сделать задержку перед запросами, хотя бы 300мс. Важно: второй запуск run будет приводить к ошибкам, т.к. тесты предполагают, что таблицы пустые(кроме таблицы пользователей, где после запуска приложения появляется главный админ) - т.е. после первого запуска нужно очистить таблицы(но запись с главным админом оставить), и только после этого запускать run ещё раз.
+
+### Комментарии по поводу реализации сервиса
+- Запросы на получение данных, которые обычно используют GET, у меня выполнены с помощью POST, т.к. для выполнения этих запросов передаётся уникальные идентификаторы UUID пользователей и карт, а мне бы не хотелось это открыто передавать в качестве параметров URL - было принято решение передавать их в теле, поэтому я и имспользовал POST.
+- Для регистрации\логина\поиска пользователя использовался User Name, но правильнее было бы использовать номер телефона, чтобы можно было как-то проверить пользователя. Такая проверка у меня не предусматривалась, поэтому я решил использовать User Name.
+
+
 ### 1. Генерация Keystore
 Для работы сервиса авторизации (подпись JWT) необходимо локально сгенерировать файл `keystore.p12`.
 
 1. Выполните команду в каталоге ресурсов проекта (замените `YOUR_SECRET_PASSWORD` на ваш пароль и `AUTHENTICATION_SERVICE_JWT_KEYSTORE_ALIAS` на имя алиаса):
 ```bash
 keytool -genkeypair \
-  -alias AUTHENTICATION_SERVICE_JWT_KEYSTORE_ALIAS \
+  -alias SERVICE_JWT_KEYSTORE_ALIAS \
   -keyalg EC \
   -groupname secp256r1 \
   -validity 365 \
   -keystore keystore.p12 \
   -storetype PKCS12 \
-  -storepass AUTHENTICATION_SERVICE_JWT_KEYSTORE_PASSWORD \
+  -storepass SERVICE_JWT_KEYSTORE_PASSWORD \
   -dname "CN=auth-server, OU=Development, O=Cohenrol, C=NL" \
   -noprompt
 ```
@@ -58,20 +68,27 @@ keytool -genkeypair \
 ### 2. Переменные окружения
 В корне проекта должен быть `.env` файл, содержащий различные пароли и значения портов, например:
 ```env
+# это для создаваемой базы данных posgresql
 DB_NAME=bank_cards
 DB_USERNAME=bank_admin
 DB_PASSWORD=bank_secure_password123
 
+# порты для базы данных
 DB_INNER_PORT=5432
 DB_EXTERNAL_PORT=5555
 
+# порты для сервиса
 SERVICE_INNER_PORT=8080
 SERVICE_EXTERNAL_PORT=8080
 
+# это те значения, который указывались при создании приватного\публичного ключей
 SERVICE_JWT_KEYSTORE_PASSWORD=supersecurepassword
 SERVICE_JWT_KEYSTORE_ALIAS=auth-server-ec
+
+# куда положить эти ключи - это нужно сделать в каталог ресурвос(оттуда программа их читает)
 SERVICE_JWT_KEYSTORE_LOCATION=classpath:keystore.p12
 
+# это нужно для создания первого пользователя - главного админа, с помощью которого будут создаваться другие админы
 SERVICE_INIT_ADMIN_USERNAME=super_admin
 SERVICE_INIT_ADMIN_PASSWORD=password
 SERVICE_INIT_ADMIN_EMAIL=root@bank.com
@@ -81,4 +98,10 @@ SERVICE_INIT_ADMIN_EMAIL=root@bank.com
 Запустите сборку:
 ```bash
 docker compose --env-file .env up --build
+```
+
+### 4. Остановка инфраструктуры
+Запустите остановку:
+```bash
+docker compose down --volumes
 ```
